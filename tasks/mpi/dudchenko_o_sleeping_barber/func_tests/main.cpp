@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <boost/mpi/communicator.hpp>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -43,9 +44,9 @@ TEST(dudchenko_o_sleeping_barber_mpi, validation_test_3) {
   }
 }
 
-void RunSleepingBarberTest(int max_waiting_chairs) {
+static void RunSleepingBarberTest(int max_waiting_chairs) {
   boost::mpi::communicator world;
-  
+
   if (world.size() <= 1) {
     return;
   }
@@ -71,14 +72,8 @@ void RunSleepingBarberTest(int max_waiting_chairs) {
   }
 }
 
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_small) {
-  RunSleepingBarberTest(1);
-}
+TEST(dudchenko_o_sleeping_barber_mpi, functional_test_small) { RunSleepingBarberTest(1); }
 
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_medium) {
-  RunSleepingBarberTest(3);
-}
+TEST(dudchenko_o_sleeping_barber_mpi, functional_test_medium) { RunSleepingBarberTest(3); }
 
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_large) {
-  RunSleepingBarberTest(999);
-}
+TEST(dudchenko_o_sleeping_barber_mpi, functional_test_large) { RunSleepingBarberTest(999); }
