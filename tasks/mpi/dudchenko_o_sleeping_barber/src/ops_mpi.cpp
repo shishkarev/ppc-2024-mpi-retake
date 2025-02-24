@@ -93,7 +93,13 @@ bool TestMPISleepingBarber::ValidationImpl() {
 }
 
 bool TestMPISleepingBarber::RunImpl() {
-  if (world.size() < 3) return true;
+  if (world.size() < 3) {
+    if (world.rank() == 0) {
+      result = 0;
+    }
+    return true;
+  }
+
   if (world.rank() == 0) {
     while (true) {
       int client = -1;
@@ -102,7 +108,6 @@ bool TestMPISleepingBarber::RunImpl() {
 
       if (client == -1) {
         result = 0;
-        std::cout << "[DEBUG] Rank 0: Setting result to " << result << std::endl;
         break;
       }
 
@@ -175,14 +180,9 @@ bool TestMPISleepingBarber::PostProcessingImpl() {
   world.barrier();
 
   if (world.rank() == 0) {
-    std::cout << "[DEBUG] Rank 0: Entering PostProcessingImpl()" << std::endl;
-    std::cout << "[DEBUG] Rank 0: result = " << result << std::endl;
-
     if (!task_data->outputs.empty() && task_data->outputs_count[0] == sizeof(int)) {
-      std::cout << "[DEBUG] Rank 0: Writing result to output" << std::endl;
       *reinterpret_cast<int*>(task_data->outputs[0]) = result;
     } else {
-      std::cout << "[ERROR] Rank 0: Output data is invalid!" << std::endl;
       return false;
     }
   }
