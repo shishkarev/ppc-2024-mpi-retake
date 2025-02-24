@@ -13,7 +13,9 @@
 
 TEST(dudchenko_o_sleeping_barber_mpi, test_pipeline_run) {
   boost::mpi::communicator world;
-  if (world.size() < 3) { return; }
+  if (world.size() < 3) {
+    return;
+  }
 
   const int max_waiting_chairs = 3;
   bool barber_busy = false;
@@ -53,7 +55,9 @@ TEST(dudchenko_o_sleeping_barber_mpi, test_pipeline_run) {
 
 TEST(dudchenko_o_sleeping_barber_mpi, test_task_run) {
   boost::mpi::communicator world;
-  if (world.size() < 3) { return; }
+  if (world.size() < 3) {
+    return;
+  }
 
   const int max_waiting_chairs = 3;
   std::vector<int> global_res(1, 0);

@@ -39,24 +39,39 @@ TEST(dudchenko_o_sleeping_barber_sequential, validation_test_3) {
   EXPECT_TRUE(test_sleeping_barber.ValidationImpl());
 }
 
-TEST(dudchenko_o_sleeping_barber_seq, functional_test) {
-  std::vector<int> test_cases = {3, 1024};
+TEST(dudchenko_o_sleeping_barber_seq, functional_test_small) {
+  auto task_data_seq = std::make_shared<ppc::core::TaskData>();
+  int global_res = -1;
 
-  for (int max_waiting_chairs : test_cases) {
-    auto task_data_seq = std::make_shared<ppc::core::TaskData>();
-    int global_res = -1;
+  task_data_seq->inputs_count.emplace_back(3);
+  task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
+  task_data_seq->outputs_count.emplace_back(sizeof(global_res));
 
-    task_data_seq->inputs_count.emplace_back(max_waiting_chairs);
-    task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-    task_data_seq->outputs_count.emplace_back(sizeof(global_res));
+  dudchenko_o_sleeping_barber_seq::TestSleepingBarber test_sleeping_barber(task_data_seq);
 
-    dudchenko_o_sleeping_barber_seq::TestSleepingBarber test_sleeping_barber(task_data_seq);
+  ASSERT_TRUE(test_sleeping_barber.ValidationImpl());
+  ASSERT_TRUE(test_sleeping_barber.PreProcessingImpl());
+  ASSERT_TRUE(test_sleeping_barber.RunImpl());
+  ASSERT_TRUE(test_sleeping_barber.PostProcessingImpl());
 
-    ASSERT_TRUE(test_sleeping_barber.ValidationImpl());
-    ASSERT_TRUE(test_sleeping_barber.PreProcessingImpl());
-    ASSERT_TRUE(test_sleeping_barber.RunImpl());
-    ASSERT_TRUE(test_sleeping_barber.PostProcessingImpl());
-
-    EXPECT_EQ(global_res, 0);
-  }
+  EXPECT_EQ(global_res, 0);
 }
+
+TEST(dudchenko_o_sleeping_barber_seq, functional_test_large) {
+  auto task_data_seq = std::make_shared<ppc::core::TaskData>();
+  int global_res = -1;
+
+  task_data_seq->inputs_count.emplace_back(1024);
+  task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
+  task_data_seq->outputs_count.emplace_back(sizeof(global_res));
+
+  dudchenko_o_sleeping_barber_seq::TestSleepingBarber test_sleeping_barber(task_data_seq);
+
+  ASSERT_TRUE(test_sleeping_barber.ValidationImpl());
+  ASSERT_TRUE(test_sleeping_barber.PreProcessingImpl());
+  ASSERT_TRUE(test_sleeping_barber.RunImpl());
+  ASSERT_TRUE(test_sleeping_barber.PostProcessingImpl());
+
+  EXPECT_EQ(global_res, 0);
+}
+
