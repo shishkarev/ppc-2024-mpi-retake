@@ -1,13 +1,7 @@
 #pragma once
 
-#include <gtest/gtest.h>
-
 #include <memory>
-#include <numeric>
-#include <queue>
-#include <string>
 #include <utility>
-#include <vector>
 
 #include "core/task/include/task.hpp"
 
@@ -15,7 +9,7 @@ namespace dudchenko_o_sleeping_barber_seq {
 
 class TestSleepingBarber : public ppc::core::Task {
  public:
-  explicit TestSleepingBarber(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
+  explicit TestSleepingBarber(std::shared_ptr<ppc::core::TaskData> task_data) : Task(std::move(task_data)) {}
 
   bool PreProcessingImpl() override;
   bool ValidationImpl() override;
@@ -23,9 +17,9 @@ class TestSleepingBarber : public ppc::core::Task {
   bool PostProcessingImpl() override;
 
  private:
-  int max_wait{};
-  int result{};
+  int max_wait_{};
+  int result_{};
 
-  static void next_client(int client);
+  static void NextClient(int client);
 };
 }  // namespace dudchenko_o_sleeping_barber_seq
