@@ -42,141 +42,32 @@ TEST(dudchenko_o_sleeping_barber_mpi, validation_test_3) {
   }
 }
 
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_1) {
+TEST(dudchenko_o_sleeping_barber_mpi, functional_test) {
   boost::mpi::communicator world;
 
-  std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
+  std::vector<int> test_cases = {1, 3, 996, 999, 1024};
 
-  const int max_waiting_chairs = 1;
-  int global_res = -1;
+  for (int max_waiting_chairs : test_cases) {
+    std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
+    int global_res = -1;
 
-  taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
-  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-  taskDataPar->outputs_count.emplace_back(sizeof(global_res));
+    taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
+    taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
+    taskDataPar->outputs_count.emplace_back(sizeof(global_res));
 
-  dudchenko_o_sleeping_barber_mpi::TestMPISleepingBarber testMpiTaskParallel(taskDataPar);
+    dudchenko_o_sleeping_barber_mpi::TestMPISleepingBarber testMpiTaskParallel(taskDataPar);
 
-  if (world.size() > 1) {
-    ASSERT_TRUE(testMpiTaskParallel.ValidationImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PreProcessingImpl());
-    ASSERT_TRUE(testMpiTaskParallel.RunImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PostProcessingImpl());
+    if (world.size() > 1) {
+      ASSERT_TRUE(testMpiTaskParallel.ValidationImpl());
+      ASSERT_TRUE(testMpiTaskParallel.PreProcessingImpl());
+      ASSERT_TRUE(testMpiTaskParallel.RunImpl());
+      ASSERT_TRUE(testMpiTaskParallel.PostProcessingImpl());
 
-    world.barrier();
+      world.barrier();
 
-    if (world.rank() == 0) {
-      ASSERT_EQ(global_res, 0);
-    }
-  }
-}
-
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_2) {
-  boost::mpi::communicator world;
-
-  std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
-
-  const int max_waiting_chairs = 3;
-  int global_res = -1;
-
-  taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
-  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-  taskDataPar->outputs_count.emplace_back(sizeof(global_res));
-
-  dudchenko_o_sleeping_barber_mpi::TestMPISleepingBarber testMpiTaskParallel(taskDataPar);
-
-  if (world.size() > 1) {
-    ASSERT_TRUE(testMpiTaskParallel.ValidationImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PreProcessingImpl());
-    ASSERT_TRUE(testMpiTaskParallel.RunImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PostProcessingImpl());
-
-    world.barrier();
-
-    if (world.rank() == 0) {
-      ASSERT_EQ(global_res, 0);
-    }
-  }
-}
-
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_3) {
-  boost::mpi::communicator world;
-
-  std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
-
-  const int max_waiting_chairs = 996;
-  int global_res = -1;
-
-  taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
-  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-  taskDataPar->outputs_count.emplace_back(sizeof(global_res));
-
-  dudchenko_o_sleeping_barber_mpi::TestMPISleepingBarber testMpiTaskParallel(taskDataPar);
-
-  if (world.size() > 1) {
-    ASSERT_TRUE(testMpiTaskParallel.ValidationImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PreProcessingImpl());
-    ASSERT_TRUE(testMpiTaskParallel.RunImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PostProcessingImpl());
-
-    world.barrier();
-
-    if (world.rank() == 0) {
-      ASSERT_EQ(global_res, 0);
-    }
-  }
-}
-
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_4) {
-  boost::mpi::communicator world;
-
-  std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
-
-  const int max_waiting_chairs = 999;
-  int global_res = -1;
-
-  taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
-  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-  taskDataPar->outputs_count.emplace_back(sizeof(global_res));
-
-  dudchenko_o_sleeping_barber_mpi::TestMPISleepingBarber testMpiTaskParallel(taskDataPar);
-
-  if (world.size() > 1) {
-    ASSERT_TRUE(testMpiTaskParallel.ValidationImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PreProcessingImpl());
-    ASSERT_TRUE(testMpiTaskParallel.RunImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PostProcessingImpl());
-
-    world.barrier();
-    if (world.rank() == 0) {
-      ASSERT_EQ(global_res, 0);
-    }
-  }
-}
-
-TEST(dudchenko_o_sleeping_barber_mpi, functional_test_5) {
-  boost::mpi::communicator world;
-
-  std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
-
-  const int max_waiting_chairs = 1024;
-  int global_res = -1;
-
-  taskDataPar->inputs_count.emplace_back(max_waiting_chairs);
-  taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-  taskDataPar->outputs_count.emplace_back(sizeof(global_res));
-
-  dudchenko_o_sleeping_barber_mpi::TestMPISleepingBarber testMpiTaskParallel(taskDataPar);
-
-  if (world.size() > 1) {
-    ASSERT_TRUE(testMpiTaskParallel.ValidationImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PreProcessingImpl());
-    ASSERT_TRUE(testMpiTaskParallel.RunImpl());
-    ASSERT_TRUE(testMpiTaskParallel.PostProcessingImpl());
-
-    world.barrier();
-
-    if (world.rank() == 0) {
-      ASSERT_EQ(global_res, 0);
+      if (world.rank() == 0) {
+        ASSERT_EQ(global_res, 0);
+      }
     }
   }
 }
