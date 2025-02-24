@@ -179,8 +179,8 @@ void TestMPISleepingBarber::ProcessBarberSignal(bool& barber_busy) {
   }
 }
 
- static bool TestMPISleepingBarber::ShouldTerminate(const std::deque<int>& waiting_clients, int remaining_clients,
-                                            bool barber_busy) {
+bool TestMPISleepingBarber::ShouldTerminate(const std::deque<int>& waiting_clients, int remaining_clients,
+                                                   bool barber_busy) {
   return waiting_clients.empty() && remaining_clients == 0 && !barber_busy;
 }
 
