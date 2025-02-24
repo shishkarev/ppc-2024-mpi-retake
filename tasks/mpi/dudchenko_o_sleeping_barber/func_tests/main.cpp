@@ -30,7 +30,7 @@ TEST(dudchenko_o_sleeping_barber_mpi, validation_test_2) {
     task_data_par->inputs_count = {1};
     EXPECT_TRUE(test_mpi_task_parallel.ValidationImpl());
   }
-}    
+}
 
 TEST(dudchenko_o_sleeping_barber_mpi, validation_test_3) {
   boost::mpi::communicator world;
