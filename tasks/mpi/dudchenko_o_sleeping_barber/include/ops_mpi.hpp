@@ -47,7 +47,7 @@ class TestMPISleepingBarber : public ppc::core::Task {
   void ProcessIncomingClients(std::deque<int>& waiting_clients);
   void AssignClientToBarber(std::deque<int>& waiting_clients, bool& barber_busy);
   void ProcessBarberSignal(bool& barber_busy);
-  bool ShouldTerminate(const std::deque<int>& waiting_clients, int remaining_clients, bool barber_busy);
+  static bool ShouldTerminate(const std::deque<int>& waiting_clients, int remaining_clients, bool barber_busy);
   void ProcessClientCompletion(int& remaining_clients);
   void HandleClient();
 };

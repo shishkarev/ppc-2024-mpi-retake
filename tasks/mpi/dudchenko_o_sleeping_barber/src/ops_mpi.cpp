@@ -179,13 +179,14 @@ void TestMPISleepingBarber::ProcessBarberSignal(bool& barber_busy) {
   }
 }
 
-bool TestMPISleepingBarber::ShouldTerminate(const std::deque<int>& waiting_clients, int remaining_clients, bool barber_busy) {
+ static bool TestMPISleepingBarber::ShouldTerminate(const std::deque<int>& waiting_clients, int remaining_clients,
+                                            bool barber_busy) {
   return waiting_clients.empty() && remaining_clients == 0 && !barber_busy;
 }
 
 void TestMPISleepingBarber::ProcessClientCompletion(int& remaining_clients) {
   if (world_.iprobe(boost::mpi::any_source, 3)) {
-    int done_signal;
+    int done_signal = 0;
     world_.recv(boost::mpi::any_source, 3, done_signal);
     remaining_clients--;
   }
@@ -201,7 +202,7 @@ void TestMPISleepingBarber::HandleClient() {
   if (accepted) {
     world_.recv(0, 2, client);
   }
-  
+
   world_.send(1, 3, client);
 }
 

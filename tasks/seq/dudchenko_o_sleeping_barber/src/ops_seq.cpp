@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <deque>
-#include <iostream>
 #include <thread>
 
 namespace dudchenko_o_sleeping_barber_seq {

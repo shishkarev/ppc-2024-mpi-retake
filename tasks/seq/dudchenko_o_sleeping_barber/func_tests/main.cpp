@@ -74,4 +74,3 @@ TEST(dudchenko_o_sleeping_barber_seq, functional_test_large) {
 
   EXPECT_EQ(global_res, 0);
 }
-
