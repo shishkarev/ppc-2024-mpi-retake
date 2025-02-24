@@ -30,7 +30,7 @@ TEST(dudchenko_o_sleeping_barber_mpi, validation_test_2) {
     task_data_par->inputs_count = {1};
     EXPECT_TRUE(test_mpi_task_parallel.ValidationImpl());
   }
-}
+}    
 
 TEST(dudchenko_o_sleeping_barber_mpi, validation_test_3) {
   boost::mpi::communicator world;
@@ -44,7 +44,8 @@ TEST(dudchenko_o_sleeping_barber_mpi, validation_test_3) {
   }
 }
 
-static void RunSleepingBarberTest(int max_waiting_chairs) {
+namespace {
+void RunSleepingBarberTest(int max_waiting_chairs) {
   boost::mpi::communicator world;
 
   if (world.size() <= 1) {
@@ -71,6 +72,7 @@ static void RunSleepingBarberTest(int max_waiting_chairs) {
     EXPECT_EQ(global_res, 0);
   }
 }
+}  // namespace
 
 TEST(dudchenko_o_sleeping_barber_mpi, functional_test_small) { RunSleepingBarberTest(1); }
 
