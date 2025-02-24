@@ -102,6 +102,7 @@ bool TestMPISleepingBarber::RunImpl() {
 
       if (client == -1) {
         result = 0;
+        std::cout << "[DEBUG] Rank 0: Setting result to " << result << std::endl;
         break;
       }
 
