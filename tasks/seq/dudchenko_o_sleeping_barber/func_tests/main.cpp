@@ -37,40 +37,24 @@ TEST(dudchenko_o_sleeping_barber_sequential, validation_test_3) {
   EXPECT_TRUE(testSleepingBarber.ValidationImpl());
 }
 
-TEST(dudchenko_o_sleeping_barber_seq, functional_test_1) {
-  auto taskDataSeq = std::make_shared<ppc::core::TaskData>();
-  const int max_waiting_chairs = 3;
-  int global_res = -1;
+TEST(dudchenko_o_sleeping_barber_seq, functional_test) {
+  std::vector<int> test_cases = {3, 1024};
 
-  taskDataSeq->inputs_count.emplace_back(max_waiting_chairs);
-  taskDataSeq->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-  taskDataSeq->outputs_count.emplace_back(sizeof(global_res));
+  for (int max_waiting_chairs : test_cases) {
+    auto taskDataSeq = std::make_shared<ppc::core::TaskData>();
+    int global_res = -1;
 
-  dudchenko_o_sleeping_barber_seq::TestSleepingBarber testSleepingBarber(taskDataSeq);
+    taskDataSeq->inputs_count.emplace_back(max_waiting_chairs);
+    taskDataSeq->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
+    taskDataSeq->outputs_count.emplace_back(sizeof(global_res));
 
-  ASSERT_TRUE(testSleepingBarber.ValidationImpl());
-  ASSERT_TRUE(testSleepingBarber.PreProcessingImpl());
-  ASSERT_TRUE(testSleepingBarber.RunImpl());
-  ASSERT_TRUE(testSleepingBarber.PostProcessingImpl());
+    dudchenko_o_sleeping_barber_seq::TestSleepingBarber testSleepingBarber(taskDataSeq);
 
-  EXPECT_EQ(global_res, 0);
-}
+    ASSERT_TRUE(testSleepingBarber.ValidationImpl());
+    ASSERT_TRUE(testSleepingBarber.PreProcessingImpl());
+    ASSERT_TRUE(testSleepingBarber.RunImpl());
+    ASSERT_TRUE(testSleepingBarber.PostProcessingImpl());
 
-TEST(dudchenko_o_sleeping_barber_sequential, functional_test_2) {
-  auto taskDataSeq = std::make_shared<ppc::core::TaskData>();
-  const int max_waiting_chairs = 1024;
-  int global_res = -1;
-
-  taskDataSeq->inputs_count.emplace_back(max_waiting_chairs);
-  taskDataSeq->outputs.emplace_back(reinterpret_cast<uint8_t*>(&global_res));
-  taskDataSeq->outputs_count.emplace_back(sizeof(global_res));
-
-  dudchenko_o_sleeping_barber_seq::TestSleepingBarber testSleepingBarber(taskDataSeq);
-
-  ASSERT_TRUE(testSleepingBarber.ValidationImpl());
-  ASSERT_TRUE(testSleepingBarber.PreProcessingImpl());
-  ASSERT_TRUE(testSleepingBarber.RunImpl());
-  ASSERT_TRUE(testSleepingBarber.PostProcessingImpl());
-
-  EXPECT_EQ(global_res, 0);
+    EXPECT_EQ(global_res, 0);
+  }
 }
