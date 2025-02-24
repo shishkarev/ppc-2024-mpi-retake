@@ -6,7 +6,7 @@
 #include "core/perf/include/perf.hpp"
 #include "seq/dudchenko_o_sleeping_barber/include/ops_seq.hpp"
 
-TEST(sleeping_barber_test, test_pipeline_run) {
+TEST(dudchenko_o_sleeping_barber_seq, test_pipeline_run) {
   const int seats = 3;
 
   auto taskDataSeq = std::make_shared<ppc::core::TaskData>();
@@ -33,7 +33,7 @@ TEST(sleeping_barber_test, test_pipeline_run) {
   ASSERT_TRUE(perfResults != nullptr);
 }
 
-TEST(sleeping_barber_test, test_task_run) {
+TEST(dudchenko_o_sleeping_barber_seq, test_task_run) {
   const int seats = 3;
 
   auto taskDataSeq = std::make_shared<ppc::core::TaskData>();
