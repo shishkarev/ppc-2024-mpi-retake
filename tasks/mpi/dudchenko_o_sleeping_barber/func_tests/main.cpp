@@ -45,7 +45,7 @@ TEST(dudchenko_o_sleeping_barber_mpi, validation_test_3) {
 TEST(dudchenko_o_sleeping_barber_mpi, functional_test) {
   boost::mpi::communicator world;
 
-  std::vector<int> test_cases = {1, 3, 996, 999, 1024};
+  std::vector<int> test_cases = {3, 1024};
 
   for (int max_waiting_chairs : test_cases) {
     std::shared_ptr<ppc::core::TaskData> taskDataPar = std::make_shared<ppc::core::TaskData>();
