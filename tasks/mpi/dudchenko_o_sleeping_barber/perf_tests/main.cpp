@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
+
 #include <boost/mpi/timer.hpp>
 #include <vector>
+
 #include "core/perf/include/perf.hpp"
 #include "mpi/dudchenko_o_sleeping_barber/include/ops_mpi.hpp"
 
