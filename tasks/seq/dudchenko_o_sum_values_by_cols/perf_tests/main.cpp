@@ -1,11 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <vector>
 
-#include "core/perf/include/perf.hpp"
 #include "core/task/include/task.hpp"
 #include "seq/dudchenko_o_sum_values_by_cols/include/ops_sec.hpp"
 
@@ -16,7 +14,7 @@ TEST(dudchenko_o_sum_values_by_cols_seq, test_pipeline_run_seq) {
   std::vector<int> in(cols * rows, 0);
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      in[i * cols + j] = i * cols + j;
+      in[(i * cols) + j] = (i * cols) + j;
     }
   }
   std::vector<int> expect(cols, 0);
@@ -53,7 +51,7 @@ TEST(dudchenko_o_sum_values_by_cols_seq, test_task_run_seq) {
   std::vector<int> in(cols * rows, 0);
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      in[i * cols + j] = i * cols + j;
+      in[(i * cols) + j] = (i * cols) + j;
     }
   }
   std::vector<int> expect(cols, 0);

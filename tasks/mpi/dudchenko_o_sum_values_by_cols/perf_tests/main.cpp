@@ -2,12 +2,10 @@
 
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <chrono>
 #include <cstdint>
 #include <memory>
 #include <vector>
 
-#include "core/perf/include/perf.hpp"
 #include "core/task/include/task.hpp"
 #include "mpi/dudchenko_o_sum_values_by_cols/include/ops_mpi.hpp"
 
@@ -24,8 +22,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_pipeline_run) {
   for (int j = 0; j < cols; j++) {
     int tmp_sum = 0;
     for (int i = 0; i < rows; i++) {
-      int value = i * cols + j;
-      in[i * cols + j] = value;
+      int value = (i * cols) + j;
+      in[(i * cols) + j] = value;
       tmp_sum += value;
     }
     expect[j] = tmp_sum;
@@ -64,8 +62,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_task_run) {
   for (int j = 0; j < cols; j++) {
     int tmp_sum = 0;
     for (int i = 0; i < rows; i++) {
-      int value = i * cols + j;
-      in[i * cols + j] = value;
+      int value = (i * cols) + j;
+      in[(i * cols) + j] = value;
       tmp_sum += value;
     }
     expect[j] = tmp_sum;
