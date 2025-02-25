@@ -31,7 +31,8 @@ TEST(dudchenko_o_sum_values_by_cols_seq, test_pipeline_run_seq) {
 
   auto task_data_seq = std::make_shared<ppc::core::TaskData>();
   task_data_seq->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-  task_data_seq->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+  task_data_seq->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                 static_cast<unsigned int>(cols)};
   task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t *>(out.data()));
   task_data_seq->outputs_count.emplace_back(static_cast<unsigned int>(out.size()));
 
@@ -67,7 +68,8 @@ TEST(dudchenko_o_sum_values_by_cols_seq, test_task_run_seq) {
 
   auto task_data_seq = std::make_shared<ppc::core::TaskData>();
   task_data_seq->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-  task_data_seq->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+  task_data_seq->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                 static_cast<unsigned int>(cols)};
   task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t *>(out.data()));
   task_data_seq->outputs_count.emplace_back(static_cast<unsigned int>(out.size()));
 

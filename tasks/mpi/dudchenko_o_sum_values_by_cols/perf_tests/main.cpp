@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/communicator.hpp>
 #include <chrono>
@@ -33,7 +34,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_pipeline_run) {
   auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out.data()));
     task_data_par->outputs_count.emplace_back(static_cast<unsigned int>(out.size()));
   }
@@ -72,7 +74,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_task_run) {
   auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out.data()));
     task_data_par->outputs_count.emplace_back(static_cast<unsigned int>(out.size()));
   }

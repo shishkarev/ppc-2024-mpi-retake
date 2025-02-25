@@ -47,7 +47,7 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_1x1_matrix) {
   std::vector<int> out_par(cols, 0);
 
   std::vector<int> expect(cols, 1);
-  
+
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
 
   if (world.rank() == 0) {
