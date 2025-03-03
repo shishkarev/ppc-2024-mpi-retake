@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "seq/dudchenko_o_shtrassen_algorithm/include/ops_seq.hpp"
 
 bool dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential::PreProcessingImpl() {
