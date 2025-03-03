@@ -1,6 +1,6 @@
-#include <algorithm>
-
 #include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
+
+#include <algorithm>
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PreProcessingImpl() {
   auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
@@ -81,7 +81,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::subtract(const std::vec
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std::vector<double>& A,
-                                                                  const std::vector<double>& B, size_t n) {
+                                                                      const std::vector<double>& B, size_t n) {
   if (n == 1) {
     return {A[0] * B[0]};
   }

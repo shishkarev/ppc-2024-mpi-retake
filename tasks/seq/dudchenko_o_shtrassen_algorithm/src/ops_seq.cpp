@@ -1,6 +1,6 @@
-#include <algorithm>
-
 #include "seq/dudchenko_o_shtrassen_algorithm/include/ops_seq.hpp"
+
+#include <algorithm>
 
 bool dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential::PreProcessingImpl() {
   auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
