@@ -23,8 +23,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_2x2_matrices) {
   taskData->outputs_count.emplace_back(out.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_TRUE(testTaskSequential->ValidationImpl());
   ASSERT_TRUE(testTaskSequential->PreProcessingImpl());
@@ -54,8 +53,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_3x3_matrices) {
   taskData->outputs_count.emplace_back(out.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_TRUE(testTaskSequential->ValidationImpl());
   ASSERT_TRUE(testTaskSequential->PreProcessingImpl());
@@ -86,8 +84,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_4x4_matrices) {
   taskData->outputs_count.emplace_back(out.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_TRUE(testTaskSequential->ValidationImpl());
   ASSERT_TRUE(testTaskSequential->PreProcessingImpl());
@@ -121,8 +118,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_5x5_matrices) {
   taskData->outputs_count.emplace_back(out.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_TRUE(testTaskSequential->ValidationImpl());
   ASSERT_TRUE(testTaskSequential->PreProcessingImpl());
@@ -150,8 +146,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_non_valid_input) {
   taskData->outputs_count.emplace_back(out.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_FALSE(testTaskSequential->ValidationImpl());
 }
@@ -173,8 +168,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_non_valid_outputs_size) {
   taskData->outputs_count.emplace_back(out.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_FALSE(testTaskSequential->ValidationImpl());
 }
@@ -190,8 +184,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_matrices_with_different_sizes) {
   taskData->inputs_count.emplace_back(B.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_FALSE(testTaskSequential->ValidationImpl());
 }
@@ -207,8 +200,7 @@ TEST(dudchenko_o_shtrassen_algorithm_seq, test_non_square_matrices) {
   taskData->inputs_count.emplace_back(B.size());
 
   auto testTaskSequential =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(
-          taskData);
+      std::make_shared<dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential>(taskData);
 
   ASSERT_FALSE(testTaskSequential->ValidationImpl());
 }

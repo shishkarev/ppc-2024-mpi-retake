@@ -14,7 +14,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PreProces
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::ValidationImpl() {
   return !task_data->inputs.empty() && task_data->inputs_count[0] == task_data->inputs_count[1] &&
          task_data->inputs_count[0] == static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) *
-                                          static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
+                                           static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
          task_data->inputs_count[0] == task_data->outputs_count[0];
 }
 
@@ -45,7 +45,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::ValidationI
   if (world.rank() == 0) {
     return !task_data->inputs.empty() && task_data->inputs_count[0] == task_data->inputs_count[1] &&
            task_data->inputs_count[0] == static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) *
-                                            static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
+                                             static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
            task_data->inputs_count[0] == task_data->outputs_count[0];
   }
   return true;
@@ -64,8 +64,8 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcess
   return true;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::add(const std::vector<double>& A,
-                                                                              const std::vector<double>& B, size_t n) {
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::add(const std::vector<double>& A, const std::vector<double>& B,
+                                                             size_t n) {
   std::vector<double> result(n * n);
   for (size_t i = 0; i < n * n; ++i) {
     result[i] = A[i] + B[i];
@@ -74,8 +74,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::add(const std::vector<d
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::subtract(const std::vector<double>& A,
-                                                                                   const std::vector<double>& B,
-                                                                                   size_t n) {
+                                                                  const std::vector<double>& B, size_t n) {
   std::vector<double> result(n * n);
   for (size_t i = 0; i < n * n; ++i) {
     result[i] = A[i] - B[i];
@@ -84,8 +83,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::subtract(const std::vec
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std::vector<double>& A,
-                                                                                       const std::vector<double>& B,
-                                                                                       size_t n) {
+                                                                      const std::vector<double>& B, size_t n) {
   if (n == 1) {
     return {A[0] * B[0]};
   }
@@ -196,8 +194,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   auto getSubmatrix = [&](const std::vector<double>& M, size_t row, size_t col) {
     std::vector<double> sub(half_squared);
     for (size_t i = 0; i < half; ++i)
-      for (size_t j = 0; j < half; ++j)
-        sub[i * half + j] = M[(i + row) * newSize + j + col];
+      for (size_t j = 0; j < half; ++j) sub[i * half + j] = M[(i + row) * newSize + j + col];
     return sub;
   };
 
@@ -213,17 +210,16 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   std::vector<std::vector<double>> M(7, std::vector<double>(half_squared, 0.0));
   for (int task = rank; task < 7; task += size) {
     std::array<std::function<std::vector<double>()>, 7> computations = {
-      [&]() { return strassen_seq(add(A11, A22, half), add(B11, B22, half), half); },
-      [&]() { return strassen_seq(add(A21, A22, half), B11, half); },
-      [&]() { return strassen_seq(A11, subtract(B12, B22, half), half); },
-      [&]() { return strassen_seq(A22, subtract(B21, B11, half), half); },
-      [&]() { return strassen_seq(add(A11, A12, half), B22, half); },
-      [&]() { return strassen_seq(subtract(A21, A11, half), add(B11, B12, half), half); },
-      [&]() { return strassen_seq(subtract(A12, A22, half), add(B21, B22, half), half); }
-    };
+        [&]() { return strassen_seq(add(A11, A22, half), add(B11, B22, half), half); },
+        [&]() { return strassen_seq(add(A21, A22, half), B11, half); },
+        [&]() { return strassen_seq(A11, subtract(B12, B22, half), half); },
+        [&]() { return strassen_seq(A22, subtract(B21, B11, half), half); },
+        [&]() { return strassen_seq(add(A11, A12, half), B22, half); },
+        [&]() { return strassen_seq(subtract(A21, A11, half), add(B11, B12, half), half); },
+        [&]() { return strassen_seq(subtract(A12, A22, half), add(B21, B22, half), half); }};
 
     for (int task = rank; task < 7; task += size) {
-        M[task] = computations[task]();
+      M[task] = computations[task]();
     }
   }
 
@@ -237,16 +233,18 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
     for (size_t i = 0; i < half; ++i)
       for (size_t j = 0; j < half; ++j) {
         size_t idx = i * half + j;
-        result_ext[i * newSize + j] = M_global[idx] + M_global[3 * half_squared + idx] - M_global[4 * half_squared + idx] + M_global[6 * half_squared + idx];
+        result_ext[i * newSize + j] = M_global[idx] + M_global[3 * half_squared + idx] -
+                                      M_global[4 * half_squared + idx] + M_global[6 * half_squared + idx];
         result_ext[i * newSize + j + half] = M_global[2 * half_squared + idx] + M_global[4 * half_squared + idx];
         result_ext[(i + half) * newSize + j] = M_global[1 * half_squared + idx] + M_global[3 * half_squared + idx];
-        result_ext[(i + half) * newSize + j + half] = M_global[idx] - M_global[1 * half_squared + idx] + M_global[2 * half_squared + idx] + M_global[5 * half_squared + idx];
+        result_ext[(i + half) * newSize + j + half] = M_global[idx] - M_global[1 * half_squared + idx] +
+                                                      M_global[2 * half_squared + idx] +
+                                                      M_global[5 * half_squared + idx];
       }
 
     std::vector<double> final_result(n * n);
     for (size_t i = 0; i < n; ++i)
-      for (size_t j = 0; j < n; ++j)
-        final_result[i * n + j] = result_ext[i * newSize + j];
+      for (size_t j = 0; j < n; ++j) final_result[i * n + j] = result_ext[i * newSize + j];
 
     return final_result;
   }

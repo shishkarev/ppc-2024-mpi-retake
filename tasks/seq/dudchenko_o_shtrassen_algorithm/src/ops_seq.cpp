@@ -15,7 +15,7 @@ bool dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential::PreProces
 bool dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential::ValidationImpl() {
   return !task_data->inputs.empty() && task_data->inputs_count[0] == task_data->inputs_count[1] &&
          task_data->inputs_count[0] == static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) *
-                                          static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
+                                           static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
          task_data->inputs_count[0] == task_data->outputs_count[0];
 }
 
@@ -32,24 +32,22 @@ bool dudchenko_o_shtrassen_algorithm_seq::StrassenAlgoriphmSequential::PostProce
   return true;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_seq::add(const std::vector<double>& A,
-                                                                              const std::vector<double>& B, size_t n) {
+std::vector<double> dudchenko_o_shtrassen_algorithm_seq::add(const std::vector<double>& A, const std::vector<double>& B,
+                                                             size_t n) {
   std::vector<double> result(n * n);
   std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::plus<double>());
   return result;
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_seq::subtract(const std::vector<double>& A,
-                                                                                   const std::vector<double>& B,
-                                                                                   size_t n) {
+                                                                  const std::vector<double>& B, size_t n) {
   std::vector<double> result(n * n);
   std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::minus<double>());
   return result;
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_seq::strassen(const std::vector<double>& A,
-                                                                                   const std::vector<double>& B,
-                                                                                   size_t n) {
+                                                                  const std::vector<double>& B, size_t n) {
   if (n == 1) {
     return {A[0] * B[0]};
   }
@@ -69,8 +67,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_seq::strassen(const std::vec
   auto getSubmatrix = [&](const std::vector<double>& M, size_t row, size_t col) {
     std::vector<double> sub(half_squared);
     for (size_t i = 0; i < half; ++i)
-      for (size_t j = 0; j < half; ++j)
-        sub[i * half + j] = M[(i + row) * newSize + j + col];
+      for (size_t j = 0; j < half; ++j) sub[i * half + j] = M[(i + row) * newSize + j + col];
     return sub;
   };
 
@@ -105,8 +102,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_seq::strassen(const std::vec
 
   std::vector<double> result(n * n);
   for (size_t i = 0; i < n; i++)
-    for (size_t j = 0; j < n; j++)
-      result[i * n + j] = result_ext[i * newSize + j];
+    for (size_t j = 0; j < n; j++) result[i * n + j] = result_ext[i * newSize + j];
 
   return result;
 }

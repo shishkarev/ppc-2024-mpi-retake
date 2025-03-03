@@ -13,8 +13,7 @@ namespace dudchenko_o_shtrassen_algorithm_mpi {
 
 class StrassenAlgoriphmSequential : public ppc::core::Task {
  public:
-  explicit StrassenAlgoriphmSequential(std::shared_ptr<ppc::core::TaskData> taskData_)
-      : Task(std::move(taskData_)) {}
+  explicit StrassenAlgoriphmSequential(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
 
   bool PreProcessingImpl() override;
   bool ValidationImpl() override;
@@ -30,8 +29,7 @@ class StrassenAlgoriphmSequential : public ppc::core::Task {
 
 class StrassenAlgoriphmParallel : public ppc::core::Task {
  public:
-  explicit StrassenAlgoriphmParallel(std::shared_ptr<ppc::core::TaskData> taskData_)
-      : Task(std::move(taskData_)) {}
+  explicit StrassenAlgoriphmParallel(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
 
   bool PreProcessingImpl() override;
   bool ValidationImpl() override;

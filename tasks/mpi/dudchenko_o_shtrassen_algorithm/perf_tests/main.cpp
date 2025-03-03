@@ -37,9 +37,7 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_pipeline_run) {
     taskDataPar->outputs_count.emplace_back(out.size());
   }
 
-  auto testTaskParallel =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(
-          taskDataPar);
+  auto testTaskParallel = std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(taskDataPar);
   ASSERT_TRUE(testTaskParallel->ValidationImpl());
   ASSERT_TRUE(testTaskParallel->PreProcessingImpl());
   ASSERT_TRUE(testTaskParallel->RunImpl());
@@ -76,9 +74,7 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_task_run) {
     taskDataPar->outputs_count.emplace_back(out.size());
   }
 
-  auto testTaskParallel =
-      std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(
-          taskDataPar);
+  auto testTaskParallel = std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(taskDataPar);
   ASSERT_TRUE(testTaskParallel->ValidationImpl());
   ASSERT_TRUE(testTaskParallel->PreProcessingImpl());
   ASSERT_TRUE(testTaskParallel->RunImpl());

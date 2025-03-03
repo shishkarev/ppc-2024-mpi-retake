@@ -9,8 +9,7 @@ namespace dudchenko_o_shtrassen_algorithm_seq {
 
 class StrassenAlgoriphmSequential : public ppc::core::Task {
  public:
-  explicit StrassenAlgoriphmSequential(std::shared_ptr<ppc::core::TaskData> taskData_)
-      : Task(std::move(taskData_)) {}
+  explicit StrassenAlgoriphmSequential(std::shared_ptr<ppc::core::TaskData> taskData_) : Task(std::move(taskData_)) {}
 
   bool PreProcessingImpl() override;
   bool ValidationImpl() override;

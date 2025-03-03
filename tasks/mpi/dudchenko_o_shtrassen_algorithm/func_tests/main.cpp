@@ -33,8 +33,7 @@ static void create_test(size_t N) {
     taskDataSeq->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_seq.data()));
     taskDataSeq->outputs_count.emplace_back(out_seq.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassenMatrixMultSeq(
-        taskDataSeq);
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassenMatrixMultSeq(taskDataSeq);
     ASSERT_TRUE(strassenMatrixMultSeq.ValidationImpl());
     ASSERT_TRUE(strassenMatrixMultSeq.PreProcessingImpl());
     ASSERT_TRUE(strassenMatrixMultSeq.RunImpl());
@@ -50,8 +49,7 @@ static void create_test(size_t N) {
     taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     taskDataPar->outputs_count.emplace_back(out_par.size());
   }
-  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(
-      taskDataPar);
+  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
   ASSERT_TRUE(strassenMatrixMultPar.ValidationImpl());
   ASSERT_TRUE(strassenMatrixMultPar.PreProcessingImpl());
   ASSERT_TRUE(strassenMatrixMultPar.RunImpl());
@@ -96,8 +94,7 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_different_size_matrices) {
     taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(B.data()));
     taskDataPar->inputs_count.emplace_back(B.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(
-        taskDataPar);
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
     ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
   }
 }
@@ -114,8 +111,7 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_non_squared_matrices) {
     taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(B.data()));
     taskDataPar->inputs_count.emplace_back(B.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(
-        taskDataPar);
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
     ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
   }
 }
@@ -131,8 +127,7 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_non_valid_input) {
     taskDataPar->inputs_count.emplace_back(A.size());
     taskDataPar->inputs_count.emplace_back(B.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(
-        taskDataPar);
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
     ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
   }
 }
@@ -154,8 +149,7 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_non_valid_outputs_size) {
     taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     taskDataPar->outputs_count.emplace_back(out_par.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(
-        taskDataPar);
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
     ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
   }
 }
