@@ -189,19 +189,19 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   auto B22 = getSubmatrix(B_ext, half, half);
 
   std::vector<std::vector<double>> M(7, std::vector<double>(half_squared, 0.0));
-  for (int task = rank; task < 7; task += size) {
-    std::array<std::function<std::vector<double>()>, 7> computations = {
-        [&]() { return strassen_seq(add(A11, A22, half), add(B11, B22, half), half); },
-        [&]() { return strassen_seq(add(A21, A22, half), B11, half); },
-        [&]() { return strassen_seq(A11, subtract(B12, B22, half), half); },
-        [&]() { return strassen_seq(A22, subtract(B21, B11, half), half); },
-        [&]() { return strassen_seq(add(A11, A12, half), B22, half); },
-        [&]() { return strassen_seq(subtract(A21, A11, half), add(B11, B12, half), half); },
-        [&]() { return strassen_seq(subtract(A12, A22, half), add(B21, B22, half), half); }};
 
-    for (int task = rank; task < 7; task += size) {
-      M[task] = computations[task]();
-    }
+  std::array<std::function<std::vector<double>()>, 7> computations = {
+    [&]() { return strassen_seq(add(A11, A22, half), add(B11, B22, half), half); },
+    [&]() { return strassen_seq(add(A21, A22, half), B11, half); },
+    [&]() { return strassen_seq(A11, subtract(B12, B22, half), half); },
+    [&]() { return strassen_seq(A22, subtract(B21, B11, half), half); },
+    [&]() { return strassen_seq(add(A11, A12, half), B22, half); },
+    [&]() { return strassen_seq(subtract(A21, A11, half), add(B11, B12, half), half); },
+    [&]() { return strassen_seq(subtract(A12, A22, half), add(B21, B22, half), half); }
+  };
+
+  for (int task = rank; task < 7; task += size) {
+    M[task] = computations[task]();
   }
 
   std::vector<double> M_global(7 * half_squared, 0.0);
