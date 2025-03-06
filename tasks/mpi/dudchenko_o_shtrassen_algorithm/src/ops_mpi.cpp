@@ -29,7 +29,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::RunImpl()
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PostProcessingImpl() {
   auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-  std::ranges::copy(result_, outputs);
+  std::copy(result_.begin(), result_.end(), outputs);
   return true;
 }
 
@@ -63,7 +63,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::RunImpl() {
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcessingImpl() {
   if (world_.rank() == 0) {
     auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-    std::ranges::copy(result_, outputs);
+    std::copy(result_.begin(), result_.end(), outputs);
   }
   return true;
 }
