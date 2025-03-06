@@ -159,7 +159,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(Parametre& param,
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(const Parametre& param,
                                                                                                 size_t n) {
   if (world_.rank() > 6) {
     world_.split(1);

@@ -15,8 +15,8 @@
 namespace dudchenko_o_shtrassen_algorithm_mpi {
 
 struct Parametre {
-  const std::vector<double> a;
-  const std::vector<double> b;
+  std::vector<double> a;
+  std::vector<double> b;
 };
 
 class StrassenAlgoriphmSequential : public ppc::core::Task {
@@ -44,7 +44,7 @@ class StrassenAlgoriphmParallel : public ppc::core::Task {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  std::vector<double> StrassenMpi(Parametre& param, size_t n);
+  std::vector<double> StrassenMpi(const Parametre& param, size_t n);
 
  private:
   std::vector<double> matrixA_;
