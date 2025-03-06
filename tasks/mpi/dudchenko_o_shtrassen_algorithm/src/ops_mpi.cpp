@@ -179,13 +179,14 @@ std::vector<double> constructFinalResult(const std::vector<double>& m_global, Si
     for (size_t j = 0; j < size.half; ++j) {
       size_t idx = (i * size.half) + j;
       result_ext[(i * size.new_size) + j] = m_global[idx] + m_global[(3 * half_squared) + idx] -
-                                        m_global[(4 * half_squared) + idx] + m_global[(6 * half_squared) + idx];
-      result_ext[(i * size.new_size) + j + size.half] = m_global[(2 * half_squared) + idx] + m_global[(4 * half_squared) + idx];
+                                            m_global[(4 * half_squared) + idx] + m_global[(6 * half_squared) + idx];
+      result_ext[(i * size.new_size) + j + size.half] =
+          m_global[(2 * half_squared) + idx] + m_global[(4 * half_squared) + idx];
       result_ext[((i + size.half) * size.new_size) + j] =
           m_global[(1 * half_squared) + idx] + m_global[(3 * half_squared) + idx];
-      result_ext[((i + size.half) * size.new_size) + j + size.half] = m_global[idx] - m_global[(1 * half_squared) + idx] +
-                                                        m_global[(2 * half_squared) + idx] +
-                                                        m_global[(5 * half_squared) + idx];
+      result_ext[((i + size.half) * size.new_size) + j + size.half] =
+          m_global[idx] - m_global[(1 * half_squared) + idx] + m_global[(2 * half_squared) + idx] +
+          m_global[(5 * half_squared) + idx];
     }
   }
 
