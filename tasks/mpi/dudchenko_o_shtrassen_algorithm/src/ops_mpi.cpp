@@ -163,6 +163,7 @@ namespace {
 struct Size {
   size_t new_size;
   size_t half;
+  size_t n;
 };
 
 size_t CalculateNewSize(size_t n) {
@@ -170,9 +171,10 @@ size_t CalculateNewSize(size_t n) {
   while (new_size < n) {
     new_size *= 2;
   }
+  return new_size;
 }
 
-std::vector<double> constructFinalResult(const std::vector<double>& m_global, Size size) {
+std::vector<double> ConstructFinalResult(const std::vector<double>& m_global, Size size) {
   size_t half_squared = size.half * size.half;
   std::vector<double> result_ext(size.new_size * size.new_size, 0.0);
   for (size_t i = 0; i < size.half; ++i) {
@@ -190,10 +192,10 @@ std::vector<double> constructFinalResult(const std::vector<double>& m_global, Si
     }
   }
 
-  std::vector<double> final_result(n * n);
-  for (size_t i = 0; i < n; ++i) {
-    for (size_t j = 0; j < n; ++j) {
-      final_result[(i * n) + j] = result_ext[(i * new_size) + j];
+  std::vector<double> final_result(size.n * size.n);
+  for (size_t i = 0; i < size.n; ++i) {
+    for (size_t j = 0; j < size.n; ++j) {
+      final_result[(i * size.n) + j] = result_ext[(i * size.new_size) + j];
     }
   }
 
@@ -274,7 +276,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   }
 
   if (rank == 0) {
-    return constructFinalResult(m_global, new_size, half);
+    return ConstructFinalResult(m_global, {.new_size = new_size, .half = half, .n = n});
   }
   return {};
 }
