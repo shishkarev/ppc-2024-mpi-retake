@@ -81,7 +81,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Subtract(const std::vec
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::vector<double>& A,
-                                                                      const std::vector<double>& B, size_t n) {
+                                                                     const std::vector<double>& B, size_t n) {
   if (n == 1) {
     return {A[0] * B[0]};
   }
