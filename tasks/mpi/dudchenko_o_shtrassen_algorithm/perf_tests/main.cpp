@@ -12,11 +12,11 @@
 #include "core/task/include/task.hpp"
 #include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
 
-namespace{
+namespace {
 struct Value {
   double min_value = -50;
   double max_value = 50;
-}
+};
 
 std::vector<double> generate_random_square_matrix(int n, Value value) {
   std::vector<double> matrix(n * n);
@@ -30,7 +30,7 @@ std::vector<double> generate_random_square_matrix(int n, Value value) {
   }
   return matrix;
 }
-}  //namepace
+}  // namespace
 
 TEST(dudchenko_o_shtrassen_algorithm_mpi, test_pipeline_run) {
   boost::mpi::communicator world;
@@ -50,7 +50,8 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_pipeline_run) {
     task_data_par->outputs_count.emplace_back(out.size());
   }
 
-  auto test_task_parallel = std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(task_data_par);
+  auto test_task_parallel =
+      std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(task_data_par);
   ASSERT_TRUE(test_task_parallel->ValidationImpl());
   ASSERT_TRUE(test_task_parallel->PreProcessingImpl());
   ASSERT_TRUE(test_task_parallel->RunImpl());
@@ -87,7 +88,8 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_task_run) {
     task_data_par->outputs_count.emplace_back(out.size());
   }
 
-  auto test_task_parallel = std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(task_data_par);
+  auto test_task_parallel =
+      std::make_shared<dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel>(task_data_par);
   ASSERT_TRUE(test_task_parallel->ValidationImpl());
   ASSERT_TRUE(test_task_parallel->PreProcessingImpl());
   ASSERT_TRUE(test_task_parallel->RunImpl());
