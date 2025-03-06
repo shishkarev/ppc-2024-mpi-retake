@@ -36,7 +36,7 @@ class StrassenAlgoriphmParallel : public ppc::core::Task {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  std::vector<double> strassen_mpi(const std::vector<double>& A, const std::vector<double>& B, size_t n);
+  std::vector<double> StrassenMpi(const std::vector<double>& A, const std::vector<double>& B, size_t n);
 
  private:
   std::vector<double> matrixA_;
@@ -47,7 +47,7 @@ class StrassenAlgoriphmParallel : public ppc::core::Task {
   boost::mpi::communicator world;
 };
 
-std::vector<double> add(const std::vector<double>& A, const std::vector<double>& B, size_t n);
-std::vector<double> subtract(const std::vector<double>& A, const std::vector<double>& B, size_t n);
-std::vector<double> strassen_seq(const std::vector<double>& A, const std::vector<double>& B, size_t n);
+std::vector<double> Add(const std::vector<double>& A, const std::vector<double>& B, size_t n);
+std::vector<double> Subtract(const std::vector<double>& A, const std::vector<double>& B, size_t n);
+std::vector<double> StrassenSeq(const std::vector<double>& A, const std::vector<double>& B, size_t n);
 }  // namespace dudchenko_o_shtrassen_algorithm_mpi

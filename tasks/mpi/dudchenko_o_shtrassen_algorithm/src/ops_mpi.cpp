@@ -21,7 +21,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::Validatio
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::RunImpl() {
-  result_ = strassen_seq(matrixA_, matrixB_, size_);
+  result_ = StrassenSeq(matrixA_, matrixB_, size_);
   return true;
 }
 
@@ -54,7 +54,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::ValidationI
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::RunImpl() {
-  result_ = strassen_mpi(matrixA_, matrixB_, size_);
+  result_ = StrassenMpi(matrixA_, matrixB_, size_);
   return true;
 }
 
@@ -66,21 +66,21 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcess
   return true;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::add(const std::vector<double>& A, const std::vector<double>& B,
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Add(const std::vector<double>& A, const std::vector<double>& B,
                                                              size_t n) {
   std::vector<double> result(n * n);
   std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::plus<double>());
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::subtract(const std::vector<double>& A,
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Subtract(const std::vector<double>& A,
                                                                   const std::vector<double>& B, size_t n) {
   std::vector<double> result(n * n);
   std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::minus<double>());
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std::vector<double>& A,
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::vector<double>& A,
                                                                       const std::vector<double>& B, size_t n) {
   if (n == 1) {
     return {A[0] * B[0]};
@@ -114,13 +114,13 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std:
   auto B21 = getSubmatrix(B_ext, half, 0);
   auto B22 = getSubmatrix(B_ext, half, half);
 
-  auto M1 = strassen_seq(add(A11, A22, half), add(B11, B22, half), half);
-  auto M2 = strassen_seq(add(A21, A22, half), B11, half);
-  auto M3 = strassen_seq(A11, subtract(B12, B22, half), half);
-  auto M4 = strassen_seq(A22, subtract(B21, B11, half), half);
-  auto M5 = strassen_seq(add(A11, A12, half), B22, half);
-  auto M6 = strassen_seq(subtract(A21, A11, half), add(B11, B12, half), half);
-  auto M7 = strassen_seq(subtract(A12, A22, half), add(B21, B22, half), half);
+  auto M1 = StrassenSeq(Add(A11, A22, half), Add(B11, B22, half), half);
+  auto M2 = StrassenSeq(Add(A21, A22, half), B11, half);
+  auto M3 = StrassenSeq(A11, Subtract(B12, B22, half), half);
+  auto M4 = StrassenSeq(A22, Subtract(B21, B11, half), half);
+  auto M5 = StrassenSeq(Add(A11, A12, half), B22, half);
+  auto M6 = StrassenSeq(Subtract(A21, A11, half), Add(B11, B12, half), half);
+  auto M7 = StrassenSeq(Subtract(A12, A22, half), Add(B21, B22, half), half);
 
   std::vector<double> result_ext(newSize * newSize, 0.0);
   for (size_t i = 0; i < half; ++i) {
@@ -141,7 +141,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std:
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::strassen_mpi(
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(
     const std::vector<double>& A, const std::vector<double>& B, size_t n) {
   if (world.rank() > 6) {
     world.split(1);
@@ -191,13 +191,13 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   std::vector<std::vector<double>> M(7, std::vector<double>(half_squared, 0.0));
 
   std::array<std::function<std::vector<double>()>, 7> computations = {
-      [&]() { return strassen_seq(add(A11, A22, half), add(B11, B22, half), half); },
-      [&]() { return strassen_seq(add(A21, A22, half), B11, half); },
-      [&]() { return strassen_seq(A11, subtract(B12, B22, half), half); },
-      [&]() { return strassen_seq(A22, subtract(B21, B11, half), half); },
-      [&]() { return strassen_seq(add(A11, A12, half), B22, half); },
-      [&]() { return strassen_seq(subtract(A21, A11, half), add(B11, B12, half), half); },
-      [&]() { return strassen_seq(subtract(A12, A22, half), add(B21, B22, half), half); }};
+      [&]() { return StrassenSeq(Add(A11, A22, half), Add(B11, B22, half), half); },
+      [&]() { return StrassenSeq(Add(A21, A22, half), B11, half); },
+      [&]() { return StrassenSeq(A11, Subtract(B12, B22, half), half); },
+      [&]() { return StrassenSeq(A22, Subtract(B21, B11, half), half); },
+      [&]() { return StrassenSeq(Add(A11, A12, half), B22, half); },
+      [&]() { return StrassenSeq(Subtract(A21, A11, half), Add(B11, B12, half), half); },
+      [&]() { return StrassenSeq(Subtract(A12, A22, half), Add(B21, B22, half), half); }};
 
   for (int task = rank; task < 7; task += size) {
     M[task] = computations[task]();
