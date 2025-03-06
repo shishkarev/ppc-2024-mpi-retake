@@ -5,6 +5,7 @@
 #include <boost/serialization/vector.hpp>
 #include <cmath>
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <utility>
 #include <vector>
