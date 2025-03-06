@@ -14,8 +14,8 @@
 
 namespace {
 struct Value {
-  double min_value = -50;
-  double max_value = 50;
+  double min_value;
+  double max_value;
 };
 
 std::vector<double> generate_random_square_matrix(int n, Value value) {
@@ -36,8 +36,8 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_pipeline_run) {
   boost::mpi::communicator world;
   const size_t n = 256;
 
-  std::vector<double> a = generate_random_square_matrix(n);
-  std::vector<double> b = generate_random_square_matrix(n);
+  std::vector<double> a = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
+  std::vector<double> b = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
   std::vector<double> out(n * n, 0.0);
 
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
@@ -74,8 +74,8 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_task_run) {
   boost::mpi::communicator world;
   const size_t n = 256;
 
-  std::vector<double> a = generate_random_square_matrix(n);
-  std::vector<double> b = generate_random_square_matrix(n);
+  std::vector<double> a = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
+  std::vector<double> b = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
   std::vector<double> out(n * n, 0.0);
 
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
