@@ -1,6 +1,10 @@
 #include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
 
+#include <array>
 #include <algorithm>
+#include <boost/mpi/collectives.hpp>
+#include <boost/mpi/collectives/reduce.hpp>
+#include <boost/mpi/communicator.hpp>
 #include <cmath>
 #include <cstddef>
 
