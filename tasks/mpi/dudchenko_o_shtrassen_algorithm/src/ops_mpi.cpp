@@ -11,11 +11,11 @@
 #include <vector>
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PreProcessingImpl() {
-  auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
-  auto* inputsB = reinterpret_cast<double*>(task_data->inputs[1]);
+  auto* inputs_a = reinterpret_cast<double*>(task_data->inputs[0]);
+  auto* inputs_b = reinterpret_cast<double*>(task_data->inputs[1]);
   size_ = static_cast<size_t>(std::sqrt(task_data->inputs_count[0]));
-  matrixA_.assign(inputsA, inputsA + size_ * size_);
-  matrixB_.assign(inputsB, inputsB + size_ * size_);
+  matrixA_.assign(inputs_a, inputs_a + size_ * size_);
+  matrixB_.assign(inputs_b, inputs_b + size_ * size_);
   result_.resize(size_ * size_);
 
   return true;
@@ -35,17 +35,17 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::RunImpl()
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PostProcessingImpl() {
   auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-  std::copy(result_.begin(), result_.end(), outputs);
+  std::copy(result_.begin(), result_.end(), outputs);  // NOLINT
   return true;
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PreProcessingImpl() {
   if (world_.rank() == 0) {
-    auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
-    auto* inputsB = reinterpret_cast<double*>(task_data->inputs[1]);
+    auto* inputs_a = reinterpret_cast<double*>(task_data->inputs[0]);
+    auto* inputs_b = reinterpret_cast<double*>(task_data->inputs[1]);
     size_ = static_cast<size_t>(std::sqrt(task_data->inputs_count[0]));
-    matrixA_.assign(inputsA, inputsA + size_ * size_);
-    matrixB_.assign(inputsB, inputsB + size_ * size_);
+    matrixA_.assign(inputs_a, inputs_a + size_ * size_);
+    matrixB_.assign(inputs_b, inputs_b + size_ * size_);
     result_.resize(size_ * size_);
   }
   return true;
@@ -69,29 +69,29 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::RunImpl() {
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcessingImpl() {
   if (world_.rank() == 0) {
     auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-    std::copy(result_.begin(), result_.end(), outputs);
+    std::copy(result_.begin(), result_.end(), outputs);  // NOLINT
   }
   return true;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Add(const std::vector<double>& A, const std::vector<double>& B,
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Add(const std::vector<double>& a, const std::vector<double>& b,
                                                              size_t n) {
   std::vector<double> result(n * n);
-  std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::plus<double>());
+  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::plus<double>());  // NOLINT
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Subtract(const std::vector<double>& A,
-                                                                  const std::vector<double>& B, size_t n) {
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Subtract(const std::vector<double>& a,
+                                                                  const std::vector<double>& b, size_t n) {
   std::vector<double> result(n * n);
-  std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::minus<double>());
+  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::minus<double>());  // NOLINT
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::vector<double>& A,
-                                                                     const std::vector<double>& B, size_t n) {
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::vector<double>& a,
+                                                                     const std::vector<double>& b, size_t n) {
   if (n == 1) {
-    return {A[0] * B[0]};
+    return {a[0] * b[0]};
   }
 
   size_t newSize = 1;
@@ -100,8 +100,8 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
   std::vector<double> A_ext(newSize * newSize, 0.0), B_ext(newSize * newSize, 0.0);
   for (size_t i = 0; i < n; i++)
     for (size_t j = 0; j < n; j++) {
-      A_ext[i * newSize + j] = A[i * n + j];
-      B_ext[i * newSize + j] = B[i * n + j];
+      A_ext[i * newSize + j] = a[i * n + j];
+      B_ext[i * newSize + j] = b[i * n + j];
     }
 
   size_t half = newSize / 2;
@@ -150,7 +150,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(
-    const std::vector<double>& A, const std::vector<double>& B, size_t n) {
+    const std::vector<double>& a, const std::vector<double>& b, size_t n) {
   if (world_.rank() > 6) {
     world_.split(1);
     return {};
@@ -169,8 +169,8 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   if (rank == 0) {
     for (size_t i = 0; i < n; ++i)
       for (size_t j = 0; j < n; ++j) {
-        A_ext[i * newSize + j] = A[i * n + j];
-        B_ext[i * newSize + j] = B[i * n + j];
+        A_ext[i * newSize + j] = a[i * n + j];
+        B_ext[i * newSize + j] = b[i * n + j];
       }
   }
 
