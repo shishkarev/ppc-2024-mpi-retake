@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <random>
+#include <vector>
 
 #include "core/task/include/task.hpp"
 #include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
@@ -15,7 +16,7 @@ struct Value {
   double max_value;
 };
 
-static std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
+std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   std::vector<double> matrix(n * n);
 
   std::random_device rd;
@@ -27,9 +28,8 @@ static std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   }
   return matrix;
 }
-}  // namespace
 
-static void CreateTest(size_t n) {
+void CreateTest(size_t n) {
   boost::mpi::communicator world;
   std::vector<double> a = GenerateRandomSquareMatrix(n, {.min_value = -200, .max_value = 200});
   std::vector<double> b = GenerateRandomSquareMatrix(n, {.min_value = -200, .max_value = 200});
@@ -72,6 +72,7 @@ static void CreateTest(size_t n) {
     EXPECT_NEAR(out_seq[i], out_par[i], 1e-8);
   }
 }
+}  // namespace
 
 TEST(dudchenko_o_shtrassen_algorithm_mpi, test_2x2_matrices) { CreateTest(2); }
 
