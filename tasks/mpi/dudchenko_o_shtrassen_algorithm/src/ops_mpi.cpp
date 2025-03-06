@@ -1,13 +1,15 @@
 #include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
 
 #include <algorithm>
+#include <cstddef>
+#include <cmath>
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PreProcessingImpl() {
-  auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
-  auto* inputsB = reinterpret_cast<double*>(task_data->inputs[1]);
+  auto* inputs_a = reinterpret_cast<double*>(task_data->inputs[0]);
+  auto* inputs_b = reinterpret_cast<double*>(task_data->inputs[1]);
   size_ = static_cast<size_t>(std::sqrt(task_data->inputs_count[0]));
-  matrixA_.assign(inputsA, inputsA + size_ * size_);
-  matrixB_.assign(inputsB, inputsB + size_ * size_);
+  matrixA_.assign(inputs_a, inputs_a + (size_ * size_));
+  matrixB_.assign(inputs_b, inputs_b + (size_ * size_));
   result_.resize(size_ * size_);
 
   return true;
@@ -21,30 +23,30 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::Validatio
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::RunImpl() {
-  result_ = strassen_seq(matrixA_, matrixB_, size_);
+  result_ = StrassenSeq(matrixA_, matrixB_, size_);
   return true;
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PostProcessingImpl() {
   auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-  std::copy(result_.begin(), result_.end(), outputs);
+  std::ranges::copy(result_, outputs);
   return true;
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PreProcessingImpl() {
-  if (world.rank() == 0) {
-    auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
-    auto* inputsB = reinterpret_cast<double*>(task_data->inputs[1]);
+  if (world_.rank() == 0) {
+    auto* inputs_a = reinterpret_cast<double*>(task_data->inputs[0]);
+    auto* inputs_b = reinterpret_cast<double*>(task_data->inputs[1]);
     size_ = static_cast<size_t>(std::sqrt(task_data->inputs_count[0]));
-    matrixA_.assign(inputsA, inputsA + size_ * size_);
-    matrixB_.assign(inputsB, inputsB + size_ * size_);
+    matrixA_.assign(inputs_a, inputs_a + (size_ * size_));
+    matrixB_.assign(inputs_b, inputs_b + (size_ * size_));
     result_.resize(size_ * size_);
   }
   return true;
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::ValidationImpl() {
-  if (world.rank() == 0) {
+  if (world_.rank() == 0) {
     return !task_data->inputs.empty() && task_data->inputs_count[0] == task_data->inputs_count[1] &&
            task_data->inputs_count[0] == static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) *
                                              static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
@@ -54,36 +56,36 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::ValidationI
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::RunImpl() {
-  result_ = strassen_mpi(matrixA_, matrixB_, size_);
+  result_ = StrassenMpi(matrixA_, matrixB_, size_);
   return true;
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcessingImpl() {
-  if (world.rank() == 0) {
+  if (world_.rank() == 0) {
     auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-    std::copy(result_.begin(), result_.end(), outputs);
+    std::ranges::copy(result_, outputs);
   }
   return true;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::add(const std::vector<double>& A, const std::vector<double>& B,
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Add(const std::vector<double>& a, const std::vector<double>& b,
                                                              size_t n) {
   std::vector<double> result(n * n);
-  std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::plus<double>());
+  std::transform(a.begin(), b.end(), b.begin(), result.begin(), std::plus<double>());
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::subtract(const std::vector<double>& A,
-                                                                  const std::vector<double>& B, size_t n) {
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Subtract(const std::vector<double>& a,
+                                                                  const std::vector<double>& b, size_t n) {
   std::vector<double> result(n * n);
-  std::transform(A.begin(), A.end(), B.begin(), result.begin(), std::minus<double>());
+  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::minus<double>());
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std::vector<double>& A,
-                                                                      const std::vector<double>& B, size_t n) {
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::vector<double>& a,
+                                                                      const std::vector<double>& b, size_t n) {
   if (n == 1) {
-    return {A[0] * B[0]};
+    return {a[0] * b[0]};
   }
 
   size_t newSize = 1;
@@ -92,8 +94,8 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std:
   std::vector<double> A_ext(newSize * newSize, 0.0), B_ext(newSize * newSize, 0.0);
   for (size_t i = 0; i < n; i++)
     for (size_t j = 0; j < n; j++) {
-      A_ext[i * newSize + j] = A[i * n + j];
-      B_ext[i * newSize + j] = B[i * n + j];
+      A_ext[i * newSize + j] = a[i * n + j];
+      B_ext[i * newSize + j] = b[i * n + j];
     }
 
   size_t half = newSize / 2;
@@ -141,14 +143,14 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::strassen_seq(const std:
   return result;
 }
 
-std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::strassen_mpi(
-    const std::vector<double>& A, const std::vector<double>& B, size_t n) {
-  if (world.rank() > 6) {
-    world.split(1);
+std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(
+    const std::vector<double>& a, const std::vector<double>& b, size_t n) {
+  if (world_.rank() > 6) {
+    world_.split(1);
     return {};
   }
 
-  boost::mpi::communicator active_comm = world.split(0);
+  boost::mpi::communicator active_comm = world_.split(0);
   int rank = active_comm.rank();
   int size = active_comm.size();
 
@@ -161,8 +163,8 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   if (rank == 0) {
     for (size_t i = 0; i < n; ++i)
       for (size_t j = 0; j < n; ++j) {
-        A_ext[i * newSize + j] = A[i * n + j];
-        B_ext[i * newSize + j] = B[i * n + j];
+        A_ext[i * newSize + j] = a[i * n + j];
+        B_ext[i * newSize + j] = b[i * n + j];
       }
   }
 
