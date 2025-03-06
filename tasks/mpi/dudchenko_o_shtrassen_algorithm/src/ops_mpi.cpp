@@ -1,6 +1,7 @@
 #include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
 
 #include <algorithm>
+#include <memory>
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PreProcessingImpl() {
   auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
