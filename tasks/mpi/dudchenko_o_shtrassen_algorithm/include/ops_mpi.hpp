@@ -42,9 +42,10 @@ class StrassenAlgoriphmParallel : public ppc::core::Task {
   bool PreProcessingImpl() override;
   bool ValidationImpl() override;
   bool RunImpl() override;
-  bool PostProcessingImpl() override;s
+  bool PostProcessingImpl() override;
 
-  std::vector<double> StrassenMpi(Parametre& param, size_t n);
+      std::vector<double>
+      StrassenMpi(Parametre& param, size_t n);
 
  private:
   std::vector<double> matrixA_;
