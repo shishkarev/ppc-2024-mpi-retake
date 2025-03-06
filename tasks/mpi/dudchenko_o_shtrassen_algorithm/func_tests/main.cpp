@@ -16,6 +16,22 @@ struct Value {
   double max_value;
 };
 
+struct Parametre {
+  std::vector<double> a;
+  std::vector<double> b;
+};
+
+std::shared_ptr<ppc::core::TaskData> createTaskData(const Parametre param, std::vector<double>& out) {
+    auto task_data = std::make_shared<ppc::core::TaskData>();
+    task_data->inputs.emplace_back(reinterpret_cast<uint8_t *>(param.a.data()));
+    task_data->inputs_count.emplace_back(param.a.size());
+    task_data->inputs.emplace_back(reinterpret_cast<uint8_t *>(param.b.data()));
+    task_data->inputs_count.emplace_back(param.b.size());
+    task_data->outputs.emplace_back(reinterpret_cast<uint8_t *>(out.data()));
+    task_data->outputs_count.emplace_back(out.size());
+    return task_data;
+}
+
 std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   std::vector<double> matrix(n * n);
 
@@ -29,6 +45,22 @@ std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   return matrix;
 }
 
+void runSequentialTest(const std::shared_ptr<ppc::core::TaskData>& task_data) {
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassen_matrix_mult_seq(task_data);
+    ASSERT_TRUE(strassen_matrix_mult_seq.ValidationImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.PreProcessingImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.RunImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.PostProcessingImpl());
+}
+
+void runParallelTest(const std::shared_ptr<ppc::core::TaskData>& task_data) {
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data);
+    ASSERT_TRUE(strassen_matrix_mult_par.ValidationImpl());
+    ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
+    ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
+    ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
+}
+
 void CreateTest(size_t n) {
   boost::mpi::communicator world;
   std::vector<double> a = GenerateRandomSquareMatrix(n, {.min_value = -200, .max_value = 200});
@@ -39,34 +71,16 @@ void CreateTest(size_t n) {
 
   auto task_data_seq = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    task_data_seq->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
-    task_data_seq->inputs_count.emplace_back(a.size());
-    task_data_seq->inputs.emplace_back(reinterpret_cast<uint8_t *>(b.data()));
-    task_data_seq->inputs_count.emplace_back(b.size());
-    task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_seq.data()));
-    task_data_seq->outputs_count.emplace_back(out_seq.size());
-
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassen_matrix_mult_seq(task_data_seq);
-    ASSERT_TRUE(strassen_matrix_mult_seq.ValidationImpl());
-    ASSERT_TRUE(strassen_matrix_mult_seq.PreProcessingImpl());
-    ASSERT_TRUE(strassen_matrix_mult_seq.RunImpl());
-    ASSERT_TRUE(strassen_matrix_mult_seq.PostProcessingImpl());
+    task_data_seq = createTaskData({.a = a, .b = b}, out_seq);
+    runSequentialTest(task_data_seq);
   }
 
   auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
-    task_data_par->inputs_count.emplace_back(a.size());
-    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(b.data()));
-    task_data_par->inputs_count.emplace_back(b.size());
-    task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
-    task_data_par->outputs_count.emplace_back(out_par.size());
+    task_data_seq = createTaskData({.a = a, .b = b}, out_par);
   }
-  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
-  ASSERT_TRUE(strassen_matrix_mult_par.ValidationImpl());
-  ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
-  ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
-  ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
+
+  runParallelTest(task_data_par);
 
   for (size_t i = 0; i < n * n; i++) {
     EXPECT_NEAR(out_seq[i], out_par[i], 1e-8);
