@@ -222,12 +222,13 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
       for (size_t j = 0; j < half; ++j) {
         size_t idx = (i * half) + j;
         result_ext[(i * new_size) + j] = M_global[idx] + M_global[(3 * half_squared) + idx] -
-                                      M_global[(4 * half_squared) + idx] + M_global[(6 * half_squared) + idx];
+                                         M_global[(4 * half_squared) + idx] + M_global[(6 * half_squared) + idx];
         result_ext[(i * new_size) + j + half] = M_global[(2 * half_squared) + idx] + M_global[(4 * half_squared) + idx];
-        result_ext[((i + half) * new_size) + j] = M_global[(1 * half_squared) + idx] + M_global[(3 * half_squared) + idx];
+        result_ext[((i + half) * new_size) + j] =
+            M_global[(1 * half_squared) + idx] + M_global[(3 * half_squared) + idx];
         result_ext[((i + half) * new_size) + j + half] = M_global[idx] - M_global[(1 * half_squared) + idx] +
-                                                      M_global[(2 * half_squared) + idx] +
-                                                      M_global[(5 * half_squared) + idx];
+                                                         M_global[(2 * half_squared) + idx] +
+                                                         M_global[(5 * half_squared) + idx];
       }
 
     std::vector<double> final_result(n * n);
