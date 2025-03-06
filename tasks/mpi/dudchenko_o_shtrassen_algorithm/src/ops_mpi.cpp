@@ -101,11 +101,12 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
 
   std::vector<double> a_ext(new_size * new_size, 0.0);
   std::vector<double> b_ext(new_size * new_size, 0.0);
-  for (size_t i = 0; i < n; i++)
+  for (size_t i = 0; i < n; i++) {
     for (size_t j = 0; j < n; j++) {
       a_ext[(i * new_size) + j] = a[(i * n) + j];
       b_ext[(i * new_size) + j] = b[(i * n) + j];
     }
+  }
 
   size_t half = new_size / 2;
   size_t half_squared = half * half;
@@ -159,7 +160,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(
-    const std::vector<double>& a, const std::vector<double>& b, size_t n) {
+    Parametre& param, size_t n) {
   if (world_.rank() > 6) {
     world_.split(1);
     return {};
@@ -176,12 +177,13 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
     new_size *= 2;
   }
 
-  std::vector<double> a_ext(new_size * new_size, 0.0), b_ext(new_size * new_size, 0.0);
+  std::vector<double> a_ext(new_size * new_size, 0.0);
+  std::vector<double> b_ext(new_size * new_size, 0.0);
   if (rank == 0) {
     for (size_t i = 0; i < n; ++i) {
       for (size_t j = 0; j < n; ++j) {
-        a_ext[(i * new_size) + j] = a[(i * n) + j];
-        b_ext[(i * new_size) + j] = b[(i * n) + j];
+        a_ext[(i * new_size) + j] = param.a[(i * n) + j];
+        b_ext[(i * new_size) + j] = param.b[(i * n) + j];
       }
     }
   }
