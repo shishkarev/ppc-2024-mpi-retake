@@ -2,9 +2,9 @@
 
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <boost/serialization/vector.hpp>
+#include <boost/serialization/vector.hpp> // NOLINT
 #include <cmath>
-#include <functional>
+#include <functional> // NOLINT
 #include <vector>
 
 #include "core/task/include/task.hpp"
@@ -36,7 +36,7 @@ class StrassenAlgoriphmParallel : public ppc::core::Task {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  std::vector<double> StrassenMpi(const std::vector<double>& A, const std::vector<double>& B, size_t n);
+  std::vector<double> StrassenMpi(const std::vector<double>& a, const std::vector<double>& b, size_t n);
 
  private:
   std::vector<double> matrixA_;
@@ -44,10 +44,10 @@ class StrassenAlgoriphmParallel : public ppc::core::Task {
   std::vector<double> result_;
   size_t size_;
 
-  boost::mpi::communicator world;
+  boost::mpi::communicator world_;
 };
 
-std::vector<double> Add(const std::vector<double>& A, const std::vector<double>& B, size_t n);
-std::vector<double> Subtract(const std::vector<double>& A, const std::vector<double>& B, size_t n);
-std::vector<double> StrassenSeq(const std::vector<double>& A, const std::vector<double>& B, size_t n);
+std::vector<double> Add(const std::vector<double>& a, const std::vector<double>& b, size_t n);
+std::vector<double> Subtract(const std::vector<double>& a, const std::vector<double>& b, size_t n);
+std::vector<double> StrassenSeq(const std::vector<double>& a, const std::vector<double>& b, size_t n);
 }  // namespace dudchenko_o_shtrassen_algorithm_mpi

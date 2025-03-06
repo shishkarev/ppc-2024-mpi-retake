@@ -32,7 +32,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PostProce
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PreProcessingImpl() {
-  if (world.rank() == 0) {
+  if (world_.rank() == 0) {
     auto* inputsA = reinterpret_cast<double*>(task_data->inputs[0]);
     auto* inputsB = reinterpret_cast<double*>(task_data->inputs[1]);
     size_ = static_cast<size_t>(std::sqrt(task_data->inputs_count[0]));
@@ -44,7 +44,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PreProcessi
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::ValidationImpl() {
-  if (world.rank() == 0) {
+  if (world_.rank() == 0) {
     return !task_data->inputs.empty() && task_data->inputs_count[0] == task_data->inputs_count[1] &&
            task_data->inputs_count[0] == static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) *
                                              static_cast<size_t>(std::sqrt(task_data->inputs_count[0])) &&
@@ -59,7 +59,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::RunImpl() {
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcessingImpl() {
-  if (world.rank() == 0) {
+  if (world_.rank() == 0) {
     auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
     std::copy(result_.begin(), result_.end(), outputs);
   }
@@ -143,12 +143,12 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(
     const std::vector<double>& A, const std::vector<double>& B, size_t n) {
-  if (world.rank() > 6) {
-    world.split(1);
+  if (world_.rank() > 6) {
+    world_.split(1);
     return {};
   }
 
-  boost::mpi::communicator active_comm = world.split(0);
+  boost::mpi::communicator active_comm = world_.split(0);
   int rank = active_comm.rank();
   int size = active_comm.size();
 
