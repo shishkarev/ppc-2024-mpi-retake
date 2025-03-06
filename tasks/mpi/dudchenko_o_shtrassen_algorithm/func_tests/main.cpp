@@ -1,155 +1,167 @@
 #include <gtest/gtest.h>
 
-#include <mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp>
+#include <boost/mpi/communicator.hpp>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
 #include <random>
 
-static std::vector<double> generate_random_square_matrix(int n, double minValue = -200.0, double maxValue = 200.0) {
+#include "core/task/include/task.hpp"
+#include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
+
+namespace {
+struct Value{
+  double min_value;
+  double max_value;
+}
+static std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   std::vector<double> matrix(n * n);
 
   std::random_device rd;
   std::mt19937 gen(rd());
-  std::uniform_real_distribution<double> dis(minValue, maxValue);
+  std::uniform_real_distribution<double> dis(value.min_value, value.max_value);
 
   for (int i = 0; i < n * n; ++i) {
     matrix[i] = dis(gen);
   }
   return matrix;
 }
+}
 
-static void create_test(size_t N) {
+static void CreateTest(size_t n) {
   boost::mpi::communicator world;
-  std::vector<double> A = generate_random_square_matrix(N);
-  std::vector<double> B = generate_random_square_matrix(N);
+  std::vector<double> a = GenerateRandomSquareMatrix(n, {.min_value = -200, .max_value = 200});
+  std::vector<double> b = GenerateRandomSquareMatrix(n, {.min_value = -200, .max_value = 200});
 
-  std::vector<double> out_seq(N * N, 0.0);
-  std::vector<double> out_par(N * N, 0.0);
+  std::vector<double> out_seq(n * n, 0.0);
+  std::vector<double> out_par(n * n, 0.0);
 
-  auto taskDataSeq = std::make_shared<ppc::core::TaskData>();
+  auto task_data_seq = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    taskDataSeq->inputs.emplace_back(reinterpret_cast<uint8_t *>(A.data()));
-    taskDataSeq->inputs_count.emplace_back(A.size());
-    taskDataSeq->inputs.emplace_back(reinterpret_cast<uint8_t *>(B.data()));
-    taskDataSeq->inputs_count.emplace_back(B.size());
-    taskDataSeq->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_seq.data()));
-    taskDataSeq->outputs_count.emplace_back(out_seq.size());
+    task_data_seq->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
+    task_data_seq->inputs_count.emplace_back(a.size());
+    task_data_seq->inputs.emplace_back(reinterpret_cast<uint8_t *>(b.data()));
+    task_data_seq->inputs_count.emplace_back(b.size());
+    task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_seq.data()));
+    task_data_seq->outputs_count.emplace_back(out_seq.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassenMatrixMultSeq(taskDataSeq);
-    ASSERT_TRUE(strassenMatrixMultSeq.ValidationImpl());
-    ASSERT_TRUE(strassenMatrixMultSeq.PreProcessingImpl());
-    ASSERT_TRUE(strassenMatrixMultSeq.RunImpl());
-    ASSERT_TRUE(strassenMatrixMultSeq.PostProcessingImpl());
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassen_matrix_mult_seq(task_data_seq);
+    ASSERT_TRUE(strassen_matrix_mult_seq.ValidationImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.PreProcessingImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.RunImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.PostProcessingImpl());
   }
 
-  auto taskDataPar = std::make_shared<ppc::core::TaskData>();
+  auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(A.data()));
-    taskDataPar->inputs_count.emplace_back(A.size());
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(B.data()));
-    taskDataPar->inputs_count.emplace_back(B.size());
-    taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
-    taskDataPar->outputs_count.emplace_back(out_par.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
+    task_data_par->inputs_count.emplace_back(a.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(b.data()));
+    task_data_par->inputs_count.emplace_back(b.size());
+    task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
+    task_data_par->outputs_count.emplace_back(out_par.size());
   }
-  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
-  ASSERT_TRUE(strassenMatrixMultPar.ValidationImpl());
-  ASSERT_TRUE(strassenMatrixMultPar.PreProcessingImpl());
-  ASSERT_TRUE(strassenMatrixMultPar.RunImpl());
-  ASSERT_TRUE(strassenMatrixMultPar.PostProcessingImpl());
+  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
+  ASSERT_TRUE(strassen_matrix_mult_par.ValidationImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
 
-  for (size_t i = 0; i < N * N; i++) {
+  for (size_t i = 0; i < n * n; i++) {
     EXPECT_NEAR(out_seq[i], out_par[i], 1e-8);
   }
 }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_2x2_matrices) { create_test(2); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_2x2_matrices) { CreateTest(2); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_3x3_matrices) { create_test(3); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_3x3_matrices) { CreateTest(3); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_4x4_matrices) { create_test(4); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_4x4_matrices) { CreateTest(4); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_5x5_matrices) { create_test(5); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_5x5_matrices) { CreateTest(5); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_10x10_matrices) { create_test(10); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_10x10_matrices) { CreateTest(10); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_12x12_matrices) { create_test(12); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_12x12_matrices) { CreateTest(12); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_15x15_matrices) { create_test(15); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_15x15_matrices) { CreateTest(15); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_23x23_matrices) { create_test(23); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_23x23_matrices) { CreateTest(23); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_25x25_matrices) { create_test(25); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_25x25_matrices) { CreateTest(25); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_50x50_matrices) { create_test(50); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_50x50_matrices) { CreateTest(50); }
 
-TEST(dudchenko_o_shtrassen_algorithm_mpi, test_64x64_matrices) { create_test(64); }
+TEST(dudchenko_o_shtrassen_algorithm_mpi, test_64x64_matrices) { CreateTest(64); }
 
 TEST(dudchenko_o_shtrassen_algorithm_mpi, test_different_size_matrices) {
   boost::mpi::communicator world;
-  std::vector<double> A = {1.0, 2.0, 3.0, 4.0};
-  std::vector<double> B = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+  std::vector<double> a = {1.0, 2.0, 3.0, 4.0};
+  std::vector<double> b = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
 
-  auto taskDataPar = std::make_shared<ppc::core::TaskData>();
+  auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(A.data()));
-    taskDataPar->inputs_count.emplace_back(A.size());
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(B.data()));
-    taskDataPar->inputs_count.emplace_back(B.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
+    task_data_par->inputs_count.emplace_back(a.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(b.data()));
+    task_data_par->inputs_count.emplace_back(b.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
-    ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
+    ASSERT_FALSE(strassen_matrix_mult_par.ValidationImpl());
   }
 }
 
 TEST(dudchenko_o_shtrassen_algorithm_mpi, test_non_squared_matrices) {
   boost::mpi::communicator world;
-  std::vector<double> A = {1.0, 2.0, 3.0, 4.0, 5.0};
-  std::vector<double> B = {6.0, 7.0, 8.0, 9.0, 10.0};
+  std::vector<double> a = {1.0, 2.0, 3.0, 4.0, 5.0};
+  std::vector<double> b = {6.0, 7.0, 8.0, 9.0, 10.0};
 
-  auto taskDataPar = std::make_shared<ppc::core::TaskData>();
+  auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(A.data()));
-    taskDataPar->inputs_count.emplace_back(A.size());
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(B.data()));
-    taskDataPar->inputs_count.emplace_back(B.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
+    task_data_par->inputs_count.emplace_back(a.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(b.data()));
+    task_data_par->inputs_count.emplace_back(b.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
-    ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
+    ASSERT_FALSE(strassen_matrix_mult_par.ValidationImpl());
   }
 }
 
 TEST(dudchenko_o_shtrassen_algorithm_mpi, test_non_valid_input) {
   boost::mpi::communicator world;
-  std::vector<double> A = {1.0, 2.0, 3.0, 4.0, 5.0};
-  std::vector<double> B = {6.0, 7.0, 8.0, 9.0, 10.0};
+  std::vector<double> a = {1.0, 2.0, 3.0, 4.0, 5.0};
+  std::vector<double> b = {6.0, 7.0, 8.0, 9.0, 10.0};
 
-  auto taskDataPar = std::make_shared<ppc::core::TaskData>();
+  auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(A.data()));
-    taskDataPar->inputs_count.emplace_back(A.size());
-    taskDataPar->inputs_count.emplace_back(B.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
+    task_data_par->inputs_count.emplace_back(a.size());
+    task_data_par->inputs_count.emplace_back(b.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
-    ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
+    ASSERT_FALSE(strassen_matrix_mult_par.ValidationImpl());
   }
 }
 
 TEST(dudchenko_o_shtrassen_algorithm_mpi, test_non_valid_outputs_size) {
   boost::mpi::communicator world;
 
-  const size_t N = 2;
-  std::vector<double> A = {1.0, 2.0, 3.0, 4.0};
-  std::vector<double> B = {5.0, 6.0, 7.0, 8.0};
-  std::vector<double> out_par(N, 0.0);  // we need N * N
+  const size_t n = 2;
+  std::vector<double> a = {1.0, 2.0, 3.0, 4.0};
+  std::vector<double> b = {5.0, 6.0, 7.0, 8.0};
+  std::vector<double> out_par(n, 0.0);  // we need n * n
 
-  auto taskDataPar = std::make_shared<ppc::core::TaskData>();
+  auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(A.data()));
-    taskDataPar->inputs_count.emplace_back(A.size());
-    taskDataPar->inputs.emplace_back(reinterpret_cast<uint8_t *>(B.data()));
-    taskDataPar->inputs_count.emplace_back(B.size());
-    taskDataPar->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
-    taskDataPar->outputs_count.emplace_back(out_par.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(a.data()));
+    task_data_par->inputs_count.emplace_back(a.size());
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(b.data()));
+    task_data_par->inputs_count.emplace_back(b.size());
+    task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
+    task_data_par->outputs_count.emplace_back(out_par.size());
 
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassenMatrixMultPar(taskDataPar);
-    ASSERT_FALSE(strassenMatrixMultPar.ValidationImpl());
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
+    ASSERT_FALSE(strassen_matrix_mult_par.ValidationImpl());
   }
 }

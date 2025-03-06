@@ -18,7 +18,7 @@ struct Value {
   double max_value;
 };
 
-std::vector<double> generate_random_square_matrix(int n, Value value) {
+std::vector<double> GenerateRandomSquareMatrix(int n, Value value) {
   std::vector<double> matrix(n * n);
 
   std::random_device rd;
@@ -36,8 +36,8 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_pipeline_run) {
   boost::mpi::communicator world;
   const size_t n = 256;
 
-  std::vector<double> a = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
-  std::vector<double> b = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
+  std::vector<double> a = GenerateRandomSquareMatrix(n, {.min_value = -50, .max_value = 50});
+  std::vector<double> b = GenerateRandomSquareMatrix(n, {.min_value = -50, .max_value = 50});
   std::vector<double> out(n * n, 0.0);
 
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
@@ -74,8 +74,8 @@ TEST(dudchenko_o_shtrassen_algorithm_mpi, test_task_run) {
   boost::mpi::communicator world;
   const size_t n = 256;
 
-  std::vector<double> a = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
-  std::vector<double> b = generate_random_square_matrix(n, {.min_value = -50, .max_value = 50});
+  std::vector<double> a = GenerateRandomSquareMatrix(n, {.min_value = -50, .max_value = 50});
+  std::vector<double> b = GenerateRandomSquareMatrix(n, {.min_value = -50, .max_value = 50});
   std::vector<double> out(n * n, 0.0);
 
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
