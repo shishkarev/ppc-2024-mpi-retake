@@ -95,50 +95,52 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
   }
 
   size_t new_size = 1;
-  while (new_size < n) new_size *= 2;
+  while (new_size < n) {
+    new_size *= 2;
+  }
 
-  std::vector<double> A_ext(new_size * new_size, 0.0), B_ext(new_size * new_size, 0.0);
+  std::vector<double> a_ext(new_size * new_size, 0.0), b_ext(new_size * new_size, 0.0);
   for (size_t i = 0; i < n; i++)
     for (size_t j = 0; j < n; j++) {
-      A_ext[(i * new_size) + j] = a[(i * n) + j];
-      B_ext[(i * new_size) + j] = b[(i * n) + j];
+      a_ext[(i * new_size) + j] = a[(i * n) + j];
+      b_ext[(i * new_size) + j] = b[(i * n) + j];
     }
 
   size_t half = new_size / 2;
   size_t half_squared = half * half;
-  auto getSubmatrix = [&](const std::vector<double>& M, size_t row, size_t col) {
+  auto get_submatrix = [&](const std::vector<double>& m, size_t row, size_t col) {
     std::vector<double> sub(half_squared);
     for (size_t i = 0; i < half; ++i)
-      for (size_t j = 0; j < half; ++j) sub[(i * half) + j] = M[((i + row) * new_size) + j + col];
+      for (size_t j = 0; j < half; ++j) sub[(i * half) + j] = m[((i + row) * new_size) + j + col];
     return sub;
   };
 
-  auto A11 = getSubmatrix(A_ext, 0, 0);
-  auto A12 = getSubmatrix(A_ext, 0, half);
-  auto A21 = getSubmatrix(A_ext, half, 0);
-  auto A22 = getSubmatrix(A_ext, half, half);
-  auto B11 = getSubmatrix(B_ext, 0, 0);
-  auto B12 = getSubmatrix(B_ext, 0, half);
-  auto B21 = getSubmatrix(B_ext, half, 0);
-  auto B22 = getSubmatrix(B_ext, half, half);
+  auto a11 = get_submatrix(a_ext, 0, 0);
+  auto a12 = get_submatrix(a_ext, 0, half);
+  auto a21 = get_submatrix(a_ext, half, 0);
+  auto a22 = get_submatrix(a_ext, half, half);
+  auto b11 = get_submatrix(b_ext, 0, 0);
+  auto b12 = get_submatrix(b_ext, 0, half);
+  auto b21 = get_submatrix(b_ext, half, 0);
+  auto b22 = get_submatrix(b_ext, half, half);
 
-  auto M1 = StrassenSeq(Add(A11, A22, half), Add(B11, B22, half), half);
-  auto M2 = StrassenSeq(Add(A21, A22, half), B11, half);
-  auto M3 = StrassenSeq(A11, Subtract(B12, B22, half), half);
-  auto M4 = StrassenSeq(A22, Subtract(B21, B11, half), half);
-  auto M5 = StrassenSeq(Add(A11, A12, half), B22, half);
-  auto M6 = StrassenSeq(Subtract(A21, A11, half), Add(B11, B12, half), half);
-  auto M7 = StrassenSeq(Subtract(A12, A22, half), Add(B21, B22, half), half);
+  auto m1 = StrassenSeq(Add(a11, a22, half), Add(b11, b22, half), half);
+  auto m2 = StrassenSeq(Add(a21, a22, half), b11, half);
+  auto m3 = StrassenSeq(a11, Subtract(b12, b22, half), half);
+  auto m4 = StrassenSeq(a22, Subtract(b21, b11, half), half);
+  auto m5 = StrassenSeq(Add(a11, a12, half), b22, half);
+  auto m6 = StrassenSeq(Subtract(a21, a11, half), Add(b11, b12, half), half);
+  auto m7 = StrassenSeq(Subtract(a12, a22, half), Add(b21, b22, half), half);
 
   std::vector<double> result_ext(new_size * new_size, 0.0);
   for (size_t i = 0; i < half; ++i) {
     for (size_t j = 0; j < half; ++j) {
       size_t idx = (i * half) + j;
-      size_t extIdx = (i * new_size) + j;
-      result_ext[extIdx] = M1[idx] + M4[idx] - M5[idx] + M7[idx];
-      result_ext[extIdx + half] = M3[idx] + M5[idx];
-      result_ext[((i + half) * new_size) + j] = M2[idx] + M4[idx];
-      result_ext[((i + half) * new_size) + j + half] = M1[idx] + M3[idx] - M2[idx] + M6[idx];
+      size_t ext_idx = (i * new_size) + j;
+      result_ext[ext_idx] = m1[idx] + m4[idx] - m5[idx] + m7[idx];
+      result_ext[ext_idx + half] = m3[idx] + m5[idx];
+      result_ext[((i + half) * new_size) + j] = m2[idx] + m4[idx];
+      result_ext[((i + half) * new_size) + j + half] = m1[idx] + m3[idx] - m2[idx] + m6[idx];
     }
   }
 
@@ -165,55 +167,55 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   size_t new_size = 1;
   while (new_size < n) new_size *= 2;
 
-  std::vector<double> A_ext(new_size * new_size, 0.0), B_ext(new_size * new_size, 0.0);
+  std::vector<double> a_ext(new_size * new_size, 0.0), b_ext(new_size * new_size, 0.0);
   if (rank == 0) {
     for (size_t i = 0; i < n; ++i)
       for (size_t j = 0; j < n; ++j) {
-        A_ext[(i * new_size) + j] = a[(i * n) + j];
-        B_ext[(i * new_size) + j] = b[(i * n) + j];
+        a_ext[(i * new_size) + j] = a[(i * n) + j];
+        b_ext[(i * new_size) + j] = b[(i * n) + j];
       }
   }
 
-  boost::mpi::broadcast(active_comm, A_ext, 0);
-  boost::mpi::broadcast(active_comm, B_ext, 0);
+  boost::mpi::broadcast(active_comm, a_ext, 0);
+  boost::mpi::broadcast(active_comm, b_ext, 0);
 
   size_t half = new_size / 2;
   size_t half_squared = half * half;
 
-  auto getSubmatrix = [&](const std::vector<double>& M, size_t row, size_t col) {
+  auto get_submatrix = [&](const std::vector<double>& m, size_t row, size_t col) {
     std::vector<double> sub(half_squared);
     for (size_t i = 0; i < half; ++i)
-      for (size_t j = 0; j < half; ++j) sub[(i * half) + j] = M[((i + row) * new_size) + j + col];
+      for (size_t j = 0; j < half; ++j) sub[(i * half) + j] = m[((i + row) * new_size) + j + col];
     return sub;
   };
 
-  auto A11 = getSubmatrix(A_ext, 0, 0);
-  auto A12 = getSubmatrix(A_ext, 0, half);
-  auto A21 = getSubmatrix(A_ext, half, 0);
-  auto A22 = getSubmatrix(A_ext, half, half);
-  auto B11 = getSubmatrix(B_ext, 0, 0);
-  auto B12 = getSubmatrix(B_ext, 0, half);
-  auto B21 = getSubmatrix(B_ext, half, 0);
-  auto B22 = getSubmatrix(B_ext, half, half);
+  auto a11 = get_submatrix(a_ext, 0, 0);
+  auto a12 = get_submatrix(a_ext, 0, half);
+  auto a21 = get_submatrix(a_ext, half, 0);
+  auto a22 = get_submatrix(a_ext, half, half);
+  auto b11 = get_submatrix(b_ext, 0, 0);
+  auto b12 = get_submatrix(b_ext, 0, half);
+  auto b21 = get_submatrix(b_ext, half, 0);
+  auto b22 = get_submatrix(b_ext, half, half);
 
-  std::vector<std::vector<double>> M(7, std::vector<double>(half_squared, 0.0));
+  std::vector<std::vector<double>> m(7, std::vector<double>(half_squared, 0.0));
 
   std::array<std::function<std::vector<double>()>, 7> computations = {
-      [&]() { return StrassenSeq(Add(A11, A22, half), Add(B11, B22, half), half); },
-      [&]() { return StrassenSeq(Add(A21, A22, half), B11, half); },
-      [&]() { return StrassenSeq(A11, Subtract(B12, B22, half), half); },
-      [&]() { return StrassenSeq(A22, Subtract(B21, B11, half), half); },
-      [&]() { return StrassenSeq(Add(A11, A12, half), B22, half); },
-      [&]() { return StrassenSeq(Subtract(A21, A11, half), Add(B11, B12, half), half); },
-      [&]() { return StrassenSeq(Subtract(A12, A22, half), Add(B21, B22, half), half); }};
+      [&]() { return StrassenSeq(Add(a11, a22, half), Add(b11, b22, half), half); },
+      [&]() { return StrassenSeq(Add(a21, a22, half), b11, half); },
+      [&]() { return StrassenSeq(a11, Subtract(b12, b22, half), half); },
+      [&]() { return StrassenSeq(a22, Subtract(b21, b11, half), half); },
+      [&]() { return StrassenSeq(Add(a11, a12, half), b22, half); },
+      [&]() { return StrassenSeq(Subtract(a21, a11, half), Add(b11, b12, half), half); },
+      [&]() { return StrassenSeq(Subtract(a12, a22, half), Add(b21, b22, half), half); }};
 
   for (int task = rank; task < 7; task += size) {
-    M[task] = computations[task]();
+    m[task] = computations[task]();
   }
 
   std::vector<double> M_global(7 * half_squared, 0.0);
   for (size_t i = 0; i < 7; ++i) {
-    boost::mpi::reduce(active_comm, M[i].data(), half_squared, M_global.data() + (i * half_squared), std::plus(), 0);
+    boost::mpi::reduce(active_comm, m[i].data(), half_squared, M_global.data() + (i * half_squared), std::plus(), 0);
   }
 
   if (rank == 0) {
