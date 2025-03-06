@@ -22,7 +22,7 @@ static std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   std::mt19937 gen(rd());
   std::uniform_real_distribution<double> dis(value.min_value, value.max_value);
 
-  for (int i = 0; i < n * n; ++i) {
+  for (int i = 0; i < static_cast<int>(n * n); ++i) {
     matrix[i] = dis(gen);
   }
   return matrix;
