@@ -2,9 +2,9 @@
 
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <boost/serialization/vector.hpp> // NOLINT
+#include <boost/serialization/vector.hpp>  // NOLINT
 #include <cmath>
-#include <functional> // NOLINT
+#include <functional>  // NOLINT
 #include <vector>
 
 #include "core/task/include/task.hpp"
