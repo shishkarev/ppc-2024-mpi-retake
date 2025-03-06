@@ -62,7 +62,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::ValidationI
 }
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::RunImpl() {
-  result_ = StrassenMpi(matrixA_, matrixB_, size_);
+  result_ = StrassenMpi({.a = matrixA_, .b = matrixB_}, size_);
   return true;
 }
 
