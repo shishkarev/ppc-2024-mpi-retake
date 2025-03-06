@@ -11,7 +11,7 @@
 #include "core/task/include/task.hpp"
 #include "seq/dudchenko_o_shtrassen_algorithm/include/ops_seq.hpp"
 
-namespace{
+namespace {
 struct Value {
   double min_value;
   double max_value;
