@@ -10,10 +10,11 @@
 #include "mpi/dudchenko_o_shtrassen_algorithm/include/ops_mpi.hpp"
 
 namespace {
-struct Value{
+struct Value {
   double min_value;
   double max_value;
-}
+};
+
 static std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   std::vector<double> matrix(n * n);
 
@@ -26,7 +27,7 @@ static std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   }
   return matrix;
 }
-}
+}  // namespace
 
 static void CreateTest(size_t n) {
   boost::mpi::communicator world;
