@@ -159,6 +159,47 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenSeq(const std::
   return result;
 }
 
+namespace {
+struct Size {
+  size_t new_size;
+  size_t half;
+};
+
+size_t CalculateNewSize(size_t n) {
+  size_t new_size = 1;
+  while (new_size < n) {
+    new_size *= 2;
+  }
+}
+
+std::vector<double> constructFinalResult(const std::vector<double>& m_global, Size size) {
+  size_t half_squared = size.half * size.half;
+  std::vector<double> result_ext(size.new_size * size.new_size, 0.0);
+  for (size_t i = 0; i < size.half; ++i) {
+    for (size_t j = 0; j < size.half; ++j) {
+      size_t idx = (i * size.half) + j;
+      result_ext[(i * size.new_size) + j] = m_global[idx] + m_global[(3 * half_squared) + idx] -
+                                        m_global[(4 * half_squared) + idx] + m_global[(6 * half_squared) + idx];
+      result_ext[(i * size.new_size) + j + size.half] = m_global[(2 * half_squared) + idx] + m_global[(4 * half_squared) + idx];
+      result_ext[((i + size.half) * size.new_size) + j] =
+          m_global[(1 * half_squared) + idx] + m_global[(3 * half_squared) + idx];
+      result_ext[((i + size.half) * size.new_size) + j + size.half] = m_global[idx] - m_global[(1 * half_squared) + idx] +
+                                                        m_global[(2 * half_squared) + idx] +
+                                                        m_global[(5 * half_squared) + idx];
+    }
+  }
+
+  std::vector<double> final_result(n * n);
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = 0; j < n; ++j) {
+      final_result[(i * n) + j] = result_ext[(i * new_size) + j];
+    }
+  }
+
+  return final_result;
+}
+}  // namespace
+
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::StrassenMpi(const Parametre& param,
                                                                                                 size_t n) {
   if (world_.rank() > 6) {
@@ -172,10 +213,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
 
   boost::mpi::broadcast(active_comm, n, 0);
 
-  size_t new_size = 1;
-  while (new_size < n) {
-    new_size *= 2;
-  }
+  size_t new_size = CalculateNewSize(n);
 
   std::vector<double> a_ext(new_size * new_size, 0.0);
   std::vector<double> b_ext(new_size * new_size, 0.0);
@@ -235,29 +273,7 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
   }
 
   if (rank == 0) {
-    std::vector<double> result_ext(new_size * new_size, 0.0);
-    for (size_t i = 0; i < half; ++i) {
-      for (size_t j = 0; j < half; ++j) {
-        size_t idx = (i * half) + j;
-        result_ext[(i * new_size) + j] = m_global[idx] + m_global[(3 * half_squared) + idx] -
-                                         m_global[(4 * half_squared) + idx] + m_global[(6 * half_squared) + idx];
-        result_ext[(i * new_size) + j + half] = m_global[(2 * half_squared) + idx] + m_global[(4 * half_squared) + idx];
-        result_ext[((i + half) * new_size) + j] =
-            m_global[(1 * half_squared) + idx] + m_global[(3 * half_squared) + idx];
-        result_ext[((i + half) * new_size) + j + half] = m_global[idx] - m_global[(1 * half_squared) + idx] +
-                                                         m_global[(2 * half_squared) + idx] +
-                                                         m_global[(5 * half_squared) + idx];
-      }
-    }
-
-    std::vector<double> final_result(n * n);
-    for (size_t i = 0; i < n; ++i) {
-      for (size_t j = 0; j < n; ++j) {
-        final_result[(i * n) + j] = result_ext[(i * new_size) + j];
-      }
-    }
-
-    return final_result;
+    return constructFinalResult(m_global, new_size, half);
   }
   return {};
 }
