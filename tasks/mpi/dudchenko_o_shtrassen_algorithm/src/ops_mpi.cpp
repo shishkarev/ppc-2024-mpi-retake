@@ -228,7 +228,8 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
 
   std::vector<double> m_global(7 * half_squared, 0.0);
   for (size_t i = 0; i < 7; ++i) {
-    boost::mpi::reduce(active_comm, m[i].data(), static_cast<int>(half_squared), m_global.data() + (i * half_squared), std::plus(), 0);
+    boost::mpi::reduce(active_comm, m[i].data(), static_cast<int>(half_squared), m_global.data() + (i * half_squared),
+                       std::plus(), 0);
   }
 
   if (rank == 0) {
