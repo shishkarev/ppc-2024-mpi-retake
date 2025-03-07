@@ -77,7 +77,7 @@ void CreateTest(size_t n) {
 
   auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    task_data_seq = CreateTaskData({.a = a, .b = b}, out_par);
+    task_data_par = CreateTaskData({.a = a, .b = b}, out_par);
   }
 
   RunParallelTest(task_data_par);
