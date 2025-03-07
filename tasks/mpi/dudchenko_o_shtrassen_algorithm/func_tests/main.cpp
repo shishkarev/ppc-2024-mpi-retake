@@ -93,14 +93,13 @@ void CreateTest(size_t n) {
     // task_data_seq->inputs_count.emplace_back(b.size());
     // task_data_seq->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_seq.data()));
     // task_data_seq->outputs_count.emplace_back(out_seq.size());
-
-    // dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassen_matrix_mult_seq(task_data_seq);
-    // ASSERT_TRUE(strassen_matrix_mult_seq.ValidationImpl());
-    // ASSERT_TRUE(strassen_matrix_mult_seq.PreProcessingImpl());
-    // ASSERT_TRUE(strassen_matrix_mult_seq.RunImpl());
-    // ASSERT_TRUE(strassen_matrix_mult_seq.PostProcessingImpl());
     task_data_seq = CreateTaskData({.a = a, .b = b}, out_seq);
-    RunSequentialTest(task_data_seq);
+    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassen_matrix_mult_seq(task_data_seq);
+    ASSERT_TRUE(strassen_matrix_mult_seq.ValidationImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.PreProcessingImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.RunImpl());
+    ASSERT_TRUE(strassen_matrix_mult_seq.PostProcessingImpl());
+    // RunSequentialTest(task_data_seq);
   }
 
   if (world.rank() == 0) {
@@ -113,12 +112,12 @@ void CreateTest(size_t n) {
     task_data_par = CreateTaskData({.a = a, .b = b}, out_par);
   }
 
-  // dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
-  // ASSERT_TRUE(strassen_matrix_mult_par.ValidationImpl());
-  // ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
-  // ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
-  // ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
-  RunParallelTest(task_data_par);
+  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data_par);
+  ASSERT_TRUE(strassen_matrix_mult_par.ValidationImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
+  // RunParallelTest(task_data_par);
 
   if (world.rank() == 0) {
     std::cout << "Sequential output: ";
