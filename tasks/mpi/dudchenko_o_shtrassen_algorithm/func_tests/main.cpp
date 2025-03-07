@@ -83,13 +83,13 @@ void CreateTest(size_t n) {
 
   if (world.rank() == 0) {
     std::cout << "Sequential output: ";
-    for (const auto& val : out_seq) {
+    for (const auto &val : out_seq) {
       std::cout << val << " ";
     }
     std::cout << std::endl;
 
     std::cout << "Parallel output: ";
-    for (const auto& val : out_par) {
+    for (const auto &val : out_par) {
       std::cout << val << " ";
     }
     std::cout << std::endl;
