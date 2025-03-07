@@ -121,21 +121,21 @@ void CreateTest(size_t n) {
   RunParallelTest(task_data_par);
 
   if (world.rank() == 0) {
-    std::cout << "Sequential output: ";
-    for (const auto &val : out_seq) {
-      std::cout << val << " ";
-    }
-    std::cout << std::endl;
+  std::cout << "Sequential output: ";
+  for (const auto &val : out_seq) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
 
-    std::cout << "Parallel output: ";
-    for (const auto &val : out_par) {
-      std::cout << val << " ";
-    }
-    std::cout << std::endl;
+  std::cout << "Parallel output: ";
+  for (const auto &val : out_par) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
   }
 
   for (size_t i = 0; i < n * n; i++) {
-    EXPECT_NEAR(out_seq[i], out_par[i], 1e-8);
+    ASSERT_NEAR(out_seq[i], out_par[i], 1e-8);
   }
 }
 }  // namespace
