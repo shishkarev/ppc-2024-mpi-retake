@@ -34,7 +34,7 @@ std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
   return matrix;
 }
 
-std::shared_ptr<ppc::core::TaskData> CreateTaskData(const Parametre& param, std::vector<double> &out) {
+std::shared_ptr<ppc::core::TaskData> CreateTaskData(const Parametre &param, std::vector<double> &out) {
   auto task_data = std::make_shared<ppc::core::TaskData>();
   task_data->inputs.emplace_back(reinterpret_cast<uint8_t *>(const_cast<double *>(param.a.data())));
   task_data->inputs_count.emplace_back(param.a.size());
