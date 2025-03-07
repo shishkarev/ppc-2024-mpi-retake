@@ -3,6 +3,7 @@
 #include <boost/mpi/communicator.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <vector>
@@ -74,6 +75,7 @@ void CreateTest(size_t n) {
   if (world.rank() == 0) {
     task_data_seq = CreateTaskData({.a = a, .b = b}, out_seq);
     task_data_par = CreateTaskData({.a = a, .b = b}, out_par);
+    std::cout << "out_seq: " << out_seq << "out_par: " << out_par << "\n" << std::endl;
   }
 
   if (world.rank() == 0) {
