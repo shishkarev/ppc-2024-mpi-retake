@@ -60,7 +60,7 @@ void RunParallelTest(const std::shared_ptr<ppc::core::TaskData> &task_data) {
   ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
   ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
   ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
-// }
+}
 
 void CreateTest(size_t n) {
   boost::mpi::communicator world;
