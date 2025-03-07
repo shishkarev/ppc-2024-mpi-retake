@@ -70,6 +70,20 @@ void CreateTest(size_t n) {
   std::vector<double> out_seq(n * n, 0.0);
   std::vector<double> out_par(n * n, 0.0);
 
+  if (world.rank() == 0) {
+    std::cout << "Sequential output1: ";
+    for (const auto &val : out_seq) {
+      std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Parallel output1: ";
+    for (const auto &val : out_par) {
+      std::cout << val << " ";
+    }
+    std::cout << std::endl;
+  }
+
   auto task_data_seq = std::make_shared<ppc::core::TaskData>();
   auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
