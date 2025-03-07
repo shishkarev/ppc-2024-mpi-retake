@@ -35,30 +35,30 @@ std::vector<double> GenerateRandomSquareMatrix(size_t n, Value value) {
 }
 
 std::shared_ptr<ppc::core::TaskData> CreateTaskData(const Parametre param, std::vector<double>& out) {
-    auto task_data = std::make_shared<ppc::core::TaskData>();
-    task_data->inputs.emplace_back(reinterpret_cast<uint8_t *>(param.a.data()));
-    task_data->inputs_count.emplace_back(param.a.size());
-    task_data->inputs.emplace_back(reinterpret_cast<uint8_t *>(param.b.data()));
-    task_data->inputs_count.emplace_back(param.b.size());
-    task_data->outputs.emplace_back(reinterpret_cast<uint8_t *>(out.data()));
-    task_data->outputs_count.emplace_back(out.size());
-    return task_data;
+  auto task_data = std::make_shared<ppc::core::TaskData>();
+  task_data->inputs.emplace_back(reinterpret_cast<uint8_t *>(param.a.data()));
+  task_data->inputs_count.emplace_back(param.a.size());
+  task_data->inputs.emplace_back(reinterpret_cast<uint8_t *>(param.b.data()));
+  task_data->inputs_count.emplace_back(param.b.size());
+  task_data->outputs.emplace_back(reinterpret_cast<uint8_t *>(out.data()));
+  task_data->outputs_count.emplace_back(out.size());
+  return task_data;
 }
 
 void RunSequentialTest(const std::shared_ptr<ppc::core::TaskData>& task_data) {
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassen_matrix_mult_seq(task_data);
-    ASSERT_TRUE(strassen_matrix_mult_seq.ValidationImpl());
-    ASSERT_TRUE(strassen_matrix_mult_seq.PreProcessingImpl());
-    ASSERT_TRUE(strassen_matrix_mult_seq.RunImpl());
-    ASSERT_TRUE(strassen_matrix_mult_seq.PostProcessingImpl());
+  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential strassen_matrix_mult_seq(task_data);
+  ASSERT_TRUE(strassen_matrix_mult_seq.ValidationImpl());
+  ASSERT_TRUE(strassen_matrix_mult_seq.PreProcessingImpl());
+  ASSERT_TRUE(strassen_matrix_mult_seq.RunImpl());
+  ASSERT_TRUE(strassen_matrix_mult_seq.PostProcessingImpl());
 }
 
 void RunParallelTest(const std::shared_ptr<ppc::core::TaskData>& task_data) {
-    dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data);
-    ASSERT_TRUE(strassen_matrix_mult_par.ValidationImpl());
-    ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
-    ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
-    ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
+  dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel strassen_matrix_mult_par(task_data);
+  ASSERT_TRUE(strassen_matrix_mult_par.ValidationImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.PreProcessingImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.RunImpl());
+  ASSERT_TRUE(strassen_matrix_mult_par.PostProcessingImpl());
 }
 
 void CreateTest(size_t n) {
