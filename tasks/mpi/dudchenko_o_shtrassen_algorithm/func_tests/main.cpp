@@ -76,7 +76,6 @@ void CreateTest(size_t n) {
     task_data_par = CreateTaskData({.a = a, .b = b}, out_par);
   }
 
-
   if (world.rank() == 0) {
     RunSequentialTest(task_data_seq);
   }
