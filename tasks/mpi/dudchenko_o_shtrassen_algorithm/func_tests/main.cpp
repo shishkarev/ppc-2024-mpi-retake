@@ -3,7 +3,6 @@
 #include <boost/mpi/communicator.hpp>
 #include <cstddef>
 #include <cstdint>
-#include <iostream>
 #include <memory>
 #include <random>
 #include <vector>
