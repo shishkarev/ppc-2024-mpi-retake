@@ -69,15 +69,17 @@ void CreateTest(size_t n) {
   std::vector<double> out_seq(n * n, 0.0);
   std::vector<double> out_par(n * n, 0.0);
 
+  auto task_data = std::make_shared<ppc::core::TaskData>();
   auto task_data_seq = std::make_shared<ppc::core::TaskData>();
-  if (world.rank() == 0) {
-    task_data_seq = CreateTaskData({.a = a, .b = b}, out_seq);
-    RunSequentialTest(task_data_seq);
-  }
-
   auto task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
-    task_data_par = CreateTaskData({.a = a, .b = b}, out_par);
+    task_data = CreateTaskData({.a = a, .b = b}, out_seq);
+    task_data_seq = task_data;
+    task_data_par = task_data;
+  }
+
+  if (world.rank() == 0) {
+    RunSequentialTest(task_data_seq);
   }
 
   RunParallelTest(task_data_par);
