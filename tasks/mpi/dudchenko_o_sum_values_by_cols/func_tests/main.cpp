@@ -11,11 +11,11 @@
 #include "mpi/dudchenko_o_sum_values_by_cols/include/ops_mpi.hpp"
 
 namespace {
-void FillRandom(std::vector<int>& data, int min_val = 0, int max_val = 100) {
+void FillRandom(std::vector<int> &data, int min_val = 0, int max_val = 100) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> dis(min_val, max_val);
-  for (auto& val : data) {
+  for (auto &val : data) {
     val = dis(gen);
   }
 }
@@ -126,7 +126,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_fixed_3x3_matrix) {
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     task_data_par->outputs_count.emplace_back(out_par.size());
   }
@@ -163,7 +164,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_4x5_matrix) {
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     task_data_par->outputs_count.emplace_back(out_par.size());
   }
@@ -200,7 +202,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_6x7_matrix) {
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     task_data_par->outputs_count.emplace_back(out_par.size());
   }
@@ -237,7 +240,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_10x10_matrix) {
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     task_data_par->outputs_count.emplace_back(out_par.size());
   }
@@ -274,7 +278,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_20x5_matrix) {
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     task_data_par->outputs_count.emplace_back(out_par.size());
   }
@@ -311,7 +316,8 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_large_50x50_matrix) {
   std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
   if (world.rank() == 0) {
     task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
-    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows), static_cast<unsigned int>(cols)};
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
     task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
     task_data_par->outputs_count.emplace_back(out_par.size());
   }
