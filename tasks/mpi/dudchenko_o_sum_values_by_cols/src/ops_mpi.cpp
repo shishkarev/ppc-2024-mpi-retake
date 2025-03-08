@@ -69,7 +69,7 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   std::vector<int> displs(world_.size(), 0);
   std::vector<int> recv_counts(world_.size());
 
-  int offset = 0;
+  // int offset = 0;
   for (int i = 0; i < world_.size(); ++i) {
     send_counts[i] = ((i == world_.size() - 1) ? delta + last_col : delta) * rows_;
     recv_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
@@ -83,7 +83,7 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
 
   std::vector<int> local_sum(local_n, 0);
   for (int j = 0; j < local_n; ++j) {
-    for (int i = 0; i < rows_; ++i) {
+    for (int i = 0; i < static_cast<int>(rows_); ++i) {
       local_sum[j] += local_input_[i * local_n + j];
     }
   }
