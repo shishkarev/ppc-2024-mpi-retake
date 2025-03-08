@@ -67,25 +67,33 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
 
   std::vector<int> send_counts(world_.size());
   std::vector<int> displs(world_.size(), 0);
-  std::vector<int> recv_counts(world_.size());
 
-  // int offset = 0;
+  // Calculate send counts and displacements for scatterv
   for (int i = 0; i < world_.size(); ++i) {
     send_counts[i] = ((i == world_.size() - 1) ? delta + last_col : delta) * rows_;
-    recv_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
     if (i > 0) {
       displs[i] = displs[i - 1] + send_counts[i - 1];
     }
   }
 
+  // Resize local_input_ to hold the assigned columns
   local_input_.resize(rows_ * local_n);
+
+  // Scatter the columns of the matrix to each process
   boost::mpi::scatterv(world_, input_.data(), send_counts, displs, local_input_.data(), send_counts[world_.rank()], 0);
 
+  // Calculate local sum for the assigned columns
   std::vector<int> local_sum(local_n, 0);
   for (int j = 0; j < local_n; ++j) {
     for (int i = 0; i < static_cast<int>(rows_); ++i) {
       local_sum[j] += local_input_[i * local_n + j];
     }
+  }
+
+  // Gather the local sums from all processes
+  std::vector<int> recv_counts(world_.size());
+  for (int i = 0; i < world_.size(); ++i) {
+    recv_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
   }
 
   std::vector<int> displs_gath(world_.size(), 0);
@@ -94,6 +102,26 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   }
 
   boost::mpi::gatherv(world_, local_sum.data(), local_sum.size(), sum_.data(), recv_counts, displs_gath, 0);
+
+  if (world_.rank() == 0) {
+    std::cout << "Input Matrix: ";
+    for (const auto& val : input_) {
+      std::cout << val << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  std::cout << "Local Input for Rank " << world_.rank() << ": ";
+  for (const auto& val : local_input_) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
+
+  std::cout << "Local Sum for Rank " << world_.rank() << ": ";
+  for (const auto& val : local_sum) {
+    std::cout << val << " ";
+  }
+  std::cout << std::endl;
 
   return true;
 }
