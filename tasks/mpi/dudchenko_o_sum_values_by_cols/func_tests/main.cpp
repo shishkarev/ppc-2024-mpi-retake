@@ -156,7 +156,7 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_4x5_matrix) {
   if (world.rank() == 0) {
     for (int j = 0; j < cols; ++j) {
       for (int i = 0; i < rows; ++i) {
-        expect[j] += in[i * cols + j];
+        expect[j] += in[(i * cols) + j];
       }
     }
   }
@@ -194,7 +194,7 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_6x7_matrix) {
   if (world.rank() == 0) {
     for (int j = 0; j < cols; ++j) {
       for (int i = 0; i < rows; ++i) {
-        expect[j] += in[i * cols + j];
+        expect[j] += in[(i * cols) + j];
       }
     }
   }
@@ -232,7 +232,7 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_10x10_matrix) {
   if (world.rank() == 0) {
     for (int j = 0; j < cols; ++j) {
       for (int i = 0; i < rows; ++i) {
-        expect[j] += in[i * cols + j];
+        expect[j] += in[(i * cols) + j];
       }
     }
   }
@@ -270,7 +270,7 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_20x5_matrix) {
   if (world.rank() == 0) {
     for (int j = 0; j < cols; ++j) {
       for (int i = 0; i < rows; ++i) {
-        expect[j] += in[i * cols + j];
+        expect[j] += in[(i * cols) + j];
       }
     }
   }
@@ -308,7 +308,7 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_large_50x50_matrix) {
   if (world.rank() == 0) {
     for (int j = 0; j < cols; ++j) {
       for (int i = 0; i < rows; ++i) {
-        expect[j] += in[i * cols + j];
+        expect[j] += in[(i * cols) + j];
       }
     }
   }
