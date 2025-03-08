@@ -27,32 +27,73 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::ValidationImpl() {
   return true;
 }
 
+// bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
+//   broadcast(world_, rows_, 0);
+//   broadcast(world_, cols_, 0);
+
+//   int delta = (int)(cols_ / world_.size());
+//   int last_col = (int)(cols_ % world_.size());
+//   int local_n = (world_.rank() == world_.size() - 1) ? delta + last_col : delta;
+
+//   local_input_ = std::vector<int>(rows_ * local_n);
+//   std::vector<int> send_counts(world_.size());
+//   std::vector<int> recv_counts(world_.size());
+//   for (int i = 0; i < world_.size(); ++i) {
+//     send_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
+//     send_counts[i] *= (int)(rows_);
+//     recv_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
+//   }
+//   boost::mpi::scatterv(world_, input_.data(), send_counts, local_input_.data(), 0);
+
+//   std::vector<int> local_sum(local_n, 0);
+//   for (int j = 0; j < local_n; ++j) {
+//     for (unsigned int i = 0; i < rows_; ++i) {
+//       local_sum[j] += local_input_[(i * local_n) + j];
+//     }
+//   }
+
+//   boost::mpi::gatherv(world_, local_sum.data(), (int)local_sum.size(), sum_.data(), recv_counts, 0);
+
+//   return true;
+// }
+
 bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   broadcast(world_, rows_, 0);
   broadcast(world_, cols_, 0);
 
-  int delta = (int)(cols_ / world_.size());
-  int last_col = (int)(cols_ % world_.size());
+  int delta = cols_ / world_.size();
+  int last_col = cols_ % world_.size();
   int local_n = (world_.rank() == world_.size() - 1) ? delta + last_col : delta;
 
-  local_input_ = std::vector<int>(rows_ * local_n);
   std::vector<int> send_counts(world_.size());
+  std::vector<int> displs(world_.size(), 0);
   std::vector<int> recv_counts(world_.size());
-  for (int i = 0; i < world_.size(); ++i) {
-    send_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
-    send_counts[i] *= (int)(rows_);
-    recv_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
-  }
-  boost::mpi::scatterv(world_, input_.data(), send_counts, local_input_.data(), 0);
 
-  std::vector<int> local_sum(local_n, 0);
-  for (int j = 0; j < local_n; ++j) {
-    for (unsigned int i = 0; i < rows_; ++i) {
-      local_sum[j] += local_input_[(i * local_n) + j];
+  int offset = 0;
+  for (int i = 0; i < world_.size(); ++i) {
+    send_counts[i] = ((i == world_.size() - 1) ? delta + last_col : delta) * rows_;
+    recv_counts[i] = (i == world_.size() - 1) ? delta + last_col : delta;
+    if (i > 0) {
+      displs[i] = displs[i - 1] + send_counts[i - 1];
     }
   }
 
-  boost::mpi::gatherv(world_, local_sum.data(), (int)local_sum.size(), sum_.data(), recv_counts, 0);
+  local_input_.resize(rows_ * local_n);
+  boost::mpi::scatterv(world_, input_.data(), send_counts, displs, local_input_.data(), send_counts[world_.rank()], 0);
+
+  std::vector<int> local_sum(local_n, 0);
+  for (int j = 0; j < local_n; ++j) {
+    for (int i = 0; i < rows_; ++i) {
+      local_sum[j] += local_input_[i * local_n + j];
+    }
+  }
+
+  std::vector<int> displs_gath(world_.size(), 0);
+  for (int i = 1; i < world_.size(); ++i) {
+    displs_gath[i] = displs_gath[i - 1] + recv_counts[i - 1];
+  }
+
+  boost::mpi::gatherv(world_, local_sum.data(), local_sum.size(), sum_.data(), recv_counts, displs_gath, 0);
 
   return true;
 }
