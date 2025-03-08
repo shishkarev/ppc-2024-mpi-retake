@@ -11,7 +11,7 @@
 bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::PreProcessingImpl() {
   if (world_.rank() == 0) {
     input_ = std::vector<int>(task_data->inputs_count[0]);
-    auto* tmp = reinterpret_cast<int *>(task_data->inputs[0]);
+    auto* tmp = reinterpret_cast<int*>(task_data->inputs[0]);
     std::copy(tmp, tmp + task_data->inputs_count[0], input_.begin());
     rows_ = task_data->inputs_count[1];
     cols_ = task_data->inputs_count[2];
