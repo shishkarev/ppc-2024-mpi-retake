@@ -114,6 +114,35 @@ TEST(dudchenko_o_sum_values_by_cols_mpi, test_5x1_matrix) {
   }
 }
 
+TEST(dudchenko_o_sum_values_by_cols_mpi, test_fixed_3x3_matrix) {
+  boost::mpi::communicator world;
+
+  int cols = 3;
+  int rows = 3;
+  std::vector<int> in = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  std::vector<int> out_par(cols, 0);
+  std::vector<int> expect = {12, 15, 18};
+
+  std::shared_ptr<ppc::core::TaskData> task_data_par = std::make_shared<ppc::core::TaskData>();
+  if (world.rank() == 0) {
+    task_data_par->inputs.emplace_back(reinterpret_cast<uint8_t *>(in.data()));
+    task_data_par->inputs_count = {static_cast<unsigned int>(in.size()), static_cast<unsigned int>(rows),
+                                   static_cast<unsigned int>(cols)};
+    task_data_par->outputs.emplace_back(reinterpret_cast<uint8_t *>(out_par.data()));
+    task_data_par->outputs_count.emplace_back(out_par.size());
+  }
+
+  dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi sum_val_by_cols_mpi(task_data_par);
+  ASSERT_EQ(sum_val_by_cols_mpi.ValidationImpl(), true);
+  sum_val_by_cols_mpi.PreProcessingImpl();
+  sum_val_by_cols_mpi.RunImpl();
+  sum_val_by_cols_mpi.PostProcessingImpl();
+
+  if (world.rank() == 0) {
+    ASSERT_EQ(out_par, expect);
+  }
+}
+
 TEST(dudchenko_o_sum_values_by_cols_mpi, test_random_4x5_matrix) {
   boost::mpi::communicator world;
 

@@ -134,10 +134,10 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   int last_col = cols_ % world_.size();
   int local_n = (world_.rank() == world_.size() - 1) ? delta + last_col : delta;
 
+  // Calculate send counts and displacements for scatterv
   std::vector<int> send_counts(world_.size());
   std::vector<int> displs(world_.size(), 0);
 
-  // Calculate send counts and displacements for scatterv
   for (int i = 0; i < world_.size(); ++i) {
     send_counts[i] = ((i == world_.size() - 1) ? delta + last_col : delta) * rows_;
     if (i > 0) {
@@ -172,6 +172,7 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
 
   boost::mpi::gatherv(world_, local_sum.data(), local_sum.size(), sum_.data(), recv_counts, displs_gath, 0);
 
+  // Debugging output
   if (world_.rank() == 0) {
     std::cout << "Input Matrix: ";
     for (const auto& val : input_) {
