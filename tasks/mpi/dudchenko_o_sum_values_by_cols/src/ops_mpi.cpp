@@ -31,8 +31,8 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   broadcast(world_, rows_, 0);
   broadcast(world_, cols_, 0);
 
-  int delta = cols_ / world_.size();
-  int last_col = cols_ % world_.size();
+  int delta = static_cast<int>(cols_) / world_.size();
+  int last_col = static_cast<int>(cols_) % world_.size();
   int local_n = (world_.rank() == world_.size() - 1) ? delta + last_col : delta;
 
   std::vector<int> column_major_input;
@@ -40,7 +40,7 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
     column_major_input.resize(rows_ * cols_);
     for (int j = 0; j < static_cast<int>(cols_); ++j) {
       for (int i = 0; i < static_cast<int>(rows_); ++i) {
-        column_major_input[j * rows_ + i] = input_[i * cols_ + j];
+        column_major_input[(j * rows_) + i] = input_[(i * cols_) + j];
       }
     }
   }
@@ -49,7 +49,7 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   std::vector<int> displs(world_.size(), 0);
 
   for (int i = 0; i < world_.size(); ++i) {
-    send_counts[i] = ((i == world_.size() - 1) ? delta + last_col : delta) * rows_;
+    send_counts[i] = static_cast<int>(((i == world_.size() - 1) ? delta + last_col : delta) * rows_);
     if (i > 0) {
       displs[i] = displs[i - 1] + send_counts[i - 1];
     }
@@ -63,7 +63,7 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   std::vector<int> local_sum(local_n, 0);
   for (int j = 0; j < local_n; ++j) {
     for (int i = 0; i < static_cast<int>(rows_); ++i) {
-      local_sum[j] += local_input_[j * rows_ + i];
+      local_sum[j] += local_input_[(j * rows_) + i];
     }
   }
 
@@ -77,7 +77,7 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
     displs_gath[i] = displs_gath[i - 1] + recv_counts[i - 1];
   }
 
-  boost::mpi::gatherv(world_, local_sum.data(), local_sum.size(), sum_.data(), recv_counts, displs_gath, 0);
+  boost::mpi::gatherv(world_, local_sum.data(), static_cast<int>(local_sum.size()), sum_.data(), recv_counts, displs_gath, 0);
 
   return true;
 }
