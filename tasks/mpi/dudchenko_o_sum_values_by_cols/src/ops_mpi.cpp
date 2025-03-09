@@ -135,6 +135,17 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   int last_col = cols_ % world_.size();
   int local_n = (world_.rank() == world_.size() - 1) ? delta + last_col : delta;
 
+  // Reorganize input matrix from row-major to column-major
+  std::vector<int> column_major_input;
+  if (world_.rank() == 0) {
+    column_major_input.resize(rows_ * cols_);
+    for (int j = 0; j < static_cast<int>(cols_); ++j) {
+      for (int i = 0; i < static_cast<int>(rows_); ++i) {
+        column_major_input[j * rows_ + i] = input_[i * cols_ + j];
+      }
+    }
+  }
+
   // Calculate send counts and displacements for scatterv
   std::vector<int> send_counts(world_.size());
   std::vector<int> displs(world_.size(), 0);
@@ -150,13 +161,13 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
   local_input_.resize(rows_ * local_n);
 
   // Scatter the columns of the matrix to each process
-  boost::mpi::scatterv(world_, input_.data(), send_counts, displs, local_input_.data(), send_counts[world_.rank()], 0);
+  boost::mpi::scatterv(world_, column_major_input.data(), send_counts, displs, local_input_.data(), send_counts[world_.rank()], 0);
 
   // Calculate local sum for the assigned columns
   std::vector<int> local_sum(local_n, 0);
   for (int j = 0; j < local_n; ++j) {
     for (int i = 0; i < static_cast<int>(rows_); ++i) {
-      local_sum[j] += local_input_[i * local_n + j];
+      local_sum[j] += local_input_[j * rows_ + i];
     }
   }
 
