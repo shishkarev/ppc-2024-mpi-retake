@@ -229,8 +229,8 @@ std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParall
     }
   }
 
-  boost::mpi::broadcast(active_comm, a_ext, 0);
-  boost::mpi::broadcast(active_comm, b_ext, 0);
+  boost::mpi::broadcast(active_comm, a_ext.data(), new_size * new_size, 0);
+  boost::mpi::broadcast(active_comm, b_ext.data(), new_size * new_size, 0);
 
   size_t half = new_size / 2;
   size_t half_squared = half * half;
