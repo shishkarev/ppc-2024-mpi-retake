@@ -11,16 +11,14 @@
 
 #include "core/task/include/task.hpp"
 
-namespace boost {
-namespace serialization {
+namespace boost::serialization {
 
 template<class Archive>
-void serialize(Archive & ar, std::vector<double> & vec, const unsigned int version) {
+void Serialize(Archive & ar, std::vector<double> & vec, const unsigned int version) {
   ar & vec;
 }
 
-}  // namespace serialization
-}  // namespace boost
+}  // namespace boost::serialization
 
 namespace dudchenko_o_shtrassen_algorithm_mpi {
 
