@@ -80,7 +80,9 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::ValidationImpl() {
 //   local_input_.resize(rows_ * local_n);
 
 //   // Scatter the columns of the matrix to each process
-//   boost::mpi::scatterv(world_, input_.data(), send_counts, displs, local_input_.data(), send_counts[world_.rank()], 0);
+//   boost::mpi::scatterv(world_, input_.data(), send_counts, displs, local_input_.data(), send_counts[world_.rank()],
+//   0);
+
 
 //   // Calculate local sum for the assigned columns
 //   std::vector<int> local_sum(local_n, 0);
