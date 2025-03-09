@@ -77,7 +77,8 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::RunImpl() {
     displs_gath[i] = displs_gath[i - 1] + recv_counts[i - 1];
   }
 
-  boost::mpi::gatherv(world_, local_sum.data(), static_cast<int>(local_sum.size()), sum_.data(), recv_counts, displs_gath, 0);
+  boost::mpi::gatherv(world_, local_sum.data(), static_cast<int>(local_sum.size()), sum_.data(), recv_counts,
+                      displs_gath, 0);
 
   return true;
 }
