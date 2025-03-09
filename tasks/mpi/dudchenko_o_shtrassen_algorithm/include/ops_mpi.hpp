@@ -2,7 +2,6 @@
 
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/communicator.hpp>
-#include <boost/serialization/vector.hpp>
 #include <cmath>
 #include <cstddef>
 #include <memory>
@@ -10,15 +9,6 @@
 #include <vector>
 
 #include "core/task/include/task.hpp"
-
-namespace boost::serialization {
-
-template<class Archive>
-void Serialize(Archive & ar, std::vector<double> & vec, const unsigned int version) {
-  ar & vec;
-}
-
-}  // namespace boost::serialization
 
 namespace dudchenko_o_shtrassen_algorithm_mpi {
 
