@@ -29,7 +29,7 @@ std::vector<double> GenerateRandomSquareMatrix(int n, Value value) {
   return matrix;
 }
 
-bool VerifyResult(const std::vector<double>& computed, const std::vector<double>& expected, double tolerance) {
+bool VerifyResult(const std::vector<double> &computed, const std::vector<double> &expected, double tolerance) {
   for (size_t i = 0; i < computed.size(); ++i) {
     if (std::abs(computed[i] - expected[i]) > tolerance) {
       return false;
