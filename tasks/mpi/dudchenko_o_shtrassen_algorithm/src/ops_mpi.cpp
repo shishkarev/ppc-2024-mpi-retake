@@ -5,6 +5,7 @@
 #include <boost/mpi/collectives.hpp>
 #include <boost/mpi/collectives/broadcast.hpp>
 #include <boost/mpi/collectives/reduce.hpp>
+#include <boost/serialization/vector.hpp>
 #include <cmath>
 #include <cstddef>
 #include <functional>
