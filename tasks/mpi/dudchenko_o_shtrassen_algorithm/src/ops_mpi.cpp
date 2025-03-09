@@ -35,7 +35,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::RunImpl()
 
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmSequential::PostProcessingImpl() {
   auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-  std::copy(result_.begin(), result_.end(), outputs);  // NOLINT
+  std::ranges::copy(result_, outputs);
   return true;
 }
 
@@ -69,7 +69,7 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::RunImpl() {
 bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcessingImpl() {
   if (world_.rank() == 0) {
     auto* outputs = reinterpret_cast<double*>(task_data->outputs[0]);
-    std::copy(result_.begin(), result_.end(), outputs);  // NOLINT
+    std::ranges::copy(result_, outputs);
   }
   return true;
 }
@@ -77,14 +77,14 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcess
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Add(const std::vector<double>& a, const std::vector<double>& b,
                                                              size_t n) {
   std::vector<double> result(n * n);
-  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::plus<double>());  // NOLINT
+  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::plus<double>());
   return result;
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Subtract(const std::vector<double>& a,
                                                                   const std::vector<double>& b, size_t n) {
   std::vector<double> result(n * n);
-  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::minus<double>());  // NOLINT
+  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::minus<double>());
   return result;
 }
 
