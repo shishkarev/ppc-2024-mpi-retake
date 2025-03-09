@@ -77,14 +77,14 @@ bool dudchenko_o_shtrassen_algorithm_mpi::StrassenAlgoriphmParallel::PostProcess
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Add(const std::vector<double>& a, const std::vector<double>& b,
                                                              size_t n) {
   std::vector<double> result(n * n);
-  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::plus<double>());
+  std::ranges::transform(a, b, result.begin(), std::plus<>());
   return result;
 }
 
 std::vector<double> dudchenko_o_shtrassen_algorithm_mpi::Subtract(const std::vector<double>& a,
                                                                   const std::vector<double>& b, size_t n) {
   std::vector<double> result(n * n);
-  std::transform(a.begin(), a.end(), b.begin(), result.begin(), std::minus<double>());
+  std::ranges::transform(a, b, result.begin(), std::minus<>());
   return result;
 }
 
