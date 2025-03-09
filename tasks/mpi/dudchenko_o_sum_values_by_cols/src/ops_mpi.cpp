@@ -83,7 +83,6 @@ bool dudchenko_o_sum_values_by_cols_mpi::SumValByColsMpi::ValidationImpl() {
 //   boost::mpi::scatterv(world_, input_.data(), send_counts, displs, local_input_.data(), send_counts[world_.rank()],
 //   0);
 
-
 //   // Calculate local sum for the assigned columns
 //   std::vector<int> local_sum(local_n, 0);
 //   for (int j = 0; j < local_n; ++j) {
